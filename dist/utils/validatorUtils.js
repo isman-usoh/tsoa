@@ -60,7 +60,7 @@ function getParameterValidators(parameter, parameterName) {
             case 'minLength':
             case 'maxLength':
                 if (isNaN(value)) {
-                    throw new exceptions_1.GenerateMetadataError(parameter, name + " parameter use number.");
+                    throw new exceptions_1.GenerateMetadataError(name + " parameter use number.");
                 }
                 validateObj[name] = {
                     errorMsg: getErrorMsg(comment),
@@ -70,7 +70,7 @@ function getParameterValidators(parameter, parameterName) {
             case 'minDate':
             case 'maxDate':
                 if (!moment(value, moment.ISO_8601, true).isValid()) {
-                    throw new exceptions_1.GenerateMetadataError(parameter, name + " parameter use date format ISO 8601 ex. 2017-05-14, 2017-05-14T05:18Z");
+                    throw new exceptions_1.GenerateMetadataError(name + " parameter use date format ISO 8601 ex. 2017-05-14, 2017-05-14T05:18Z");
                 }
                 validateObj[name] = {
                     errorMsg: getErrorMsg(comment),
@@ -79,7 +79,7 @@ function getParameterValidators(parameter, parameterName) {
                 break;
             case 'pattern':
                 if (typeof value !== 'string') {
-                    throw new exceptions_1.GenerateMetadataError(parameter, name + " patameter use string.");
+                    throw new exceptions_1.GenerateMetadataError(name + " patameter use string.");
                 }
                 validateObj[name] = {
                     errorMsg: getErrorMsg(comment),
@@ -148,7 +148,7 @@ function getPropertyValidators(property) {
             case 'minLength':
             case 'maxLength':
                 if (isNaN(value)) {
-                    throw new exceptions_1.GenerateMetadataError(property, name + " parameter use number.");
+                    throw new exceptions_1.GenerateMetadataError(name + " parameter use number.");
                 }
                 validateObj[name] = {
                     errorMsg: getErrorMsg(comment),
@@ -158,7 +158,7 @@ function getPropertyValidators(property) {
             case 'minDate':
             case 'maxDate':
                 if (!moment(value, moment.ISO_8601, true).isValid()) {
-                    throw new exceptions_1.GenerateMetadataError(property, name + " parameter use date format ISO 8601 ex. 2017-05-14, 2017-05-14T05:18Z");
+                    throw new exceptions_1.GenerateMetadataError(name + " parameter use date format ISO 8601 ex. 2017-05-14, 2017-05-14T05:18Z");
                 }
                 validateObj[name] = {
                     errorMsg: getErrorMsg(comment),
@@ -167,7 +167,7 @@ function getPropertyValidators(property) {
                 break;
             case 'pattern':
                 if (typeof value !== 'string') {
-                    throw new exceptions_1.GenerateMetadataError(property, name + " patameter use string.");
+                    throw new exceptions_1.GenerateMetadataError(name + " patameter use string.");
                 }
                 validateObj[name] = {
                     errorMsg: getErrorMsg(comment),

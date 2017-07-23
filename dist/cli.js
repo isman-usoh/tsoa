@@ -9,6 +9,7 @@ var fs = require("fs");
 var path = require("path");
 var PrettyError = require("pretty-error");
 var mkdirp = require("mkdirp");
+var YAML = require("yamljs");
 var workingDir = process.cwd();
 var pe = new PrettyError();
 var getPackageJsonValue = function (key) {
@@ -28,16 +29,24 @@ var getConfig = function (configPath) {
     if (configPath === void 0) { configPath = 'tsoa.json'; }
     var config;
     try {
-        config = require(workingDir + "/" + configPath);
+        var ext = path.extname(configPath);
+        if (ext === '.yaml' || ext === '.yml') {
+            config = YAML.load(configPath);
+        }
+        else {
+            config = require(workingDir + "/" + configPath);
+        }
     }
     catch (err) {
         if (err.code === 'MODULE_NOT_FOUND') {
             throw Error("No config file found at '" + configPath + "'");
         }
         else if (err.name === 'SyntaxError') {
+            console.error(err);
             throw Error("Invalid JSON syntax in config at '" + configPath + "': " + err.message);
         }
         else {
+            console.error(err);
             throw Error("Unhandled error encountered loading '" + configPath + "': " + err.message);
         }
     }
@@ -93,6 +102,12 @@ var basePathArgs = {
     required: false,
     type: 'string',
 };
+var yarmlArgs = {
+    default: false,
+    describe: 'Output yaml format',
+    required: false,
+    type: 'boolean',
+};
 yargs
     .usage('Usage: $0 <command> [options]')
     .demand(1)
@@ -100,24 +115,30 @@ yargs
     basePath: basePathArgs,
     configuration: configurationArgs,
     host: hostArgs,
+    yaml: yarmlArgs,
 }, function (args) {
     try {
-        var config = getConfig(args.configuration);
+        var config_1 = getConfig(args.configuration);
         if (args.basePath) {
-            config.swagger.basePath = args.basePath;
+            config_1.swagger.basePath = args.basePath;
         }
         if (args.host) {
-            config.swagger.host = args.host;
+            config_1.swagger.host = args.host;
         }
-        var compilerOptions = validateCompilerOptions(config.compilerOptions);
-        var swaggerConfig_1 = validateSwaggerConfig(config.swagger);
+        if (args.yaml) {
+            config_1.swagger.yaml = args.yaml;
+        }
+        var compilerOptions = validateCompilerOptions(config_1.compilerOptions);
+        var swaggerConfig_1 = validateSwaggerConfig(config_1.swagger);
         var metadata = new metadataGenerator_1.MetadataGenerator(swaggerConfig_1.entryFile, compilerOptions).Generate();
-        var spec_1 = new specGenerator_1.SpecGenerator(metadata, config.swagger).GetSpec();
+        var spec_1 = new specGenerator_1.SpecGenerator(metadata, config_1.swagger).GetSpec();
         mkdirp(swaggerConfig_1.outputDirectory, function (dirErr) {
             if (dirErr) {
                 throw dirErr;
             }
-            fs.writeFile(swaggerConfig_1.outputDirectory + "/swagger.json", JSON.stringify(spec_1, null, '\t'), function (err) {
+            var data = config_1.swagger.yaml ? YAML.stringify(spec_1, 10) : JSON.stringify(spec_1, null, '\t');
+            var ext = config_1.swagger.yaml ? 'yaml' : 'json';
+            fs.writeFile(swaggerConfig_1.outputDirectory + "/swagger." + ext, data, function (err) {
                 if (err) {
                     throw new Error(err.toString());
                 }

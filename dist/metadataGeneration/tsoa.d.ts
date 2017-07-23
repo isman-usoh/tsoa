@@ -1,9 +1,7 @@
 export declare namespace Tsoa {
     interface Metadata {
-        Controllers: Controller[];
-        ReferenceTypes: {
-            [typeName: string]: ReferenceType;
-        };
+        controllers: Controller[];
+        referenceTypeMap: ReferenceTypeMap;
     }
     interface Controller {
         location: string;
@@ -35,7 +33,7 @@ export declare namespace Tsoa {
     }
     interface Validators {
         [key: string]: {
-            value: any;
+            value?: any;
             errorMsg?: string;
         };
     }
@@ -57,19 +55,25 @@ export declare namespace Tsoa {
         validators: Validators;
     }
     interface Type {
-        typeName: 'string' | 'double' | 'float' | 'integer' | 'long' | 'enum' | 'array' | 'datetime' | 'date' | 'buffer' | 'void' | 'object';
+        dataType: 'string' | 'double' | 'float' | 'integer' | 'long' | 'enum' | 'array' | 'datetime' | 'date' | 'buffer' | 'void' | 'object' | 'refEnum' | 'refObject';
     }
     interface EnumerateType extends Type {
-        typeName: 'enum';
-        members: string[];
+        dataType: 'enum';
+        enums: string[];
+    }
+    interface ArrayType extends Type {
+        dataType: 'array';
+        elementType: Type;
     }
     interface ReferenceType extends Type {
         description?: string;
-        properties: Property[];
+        dataType: 'refObject' | 'refEnum';
+        refName: string;
+        properties?: Property[];
         additionalProperties?: Type;
+        enums?: string[];
     }
-    interface ArrayType extends Type {
-        typeName: 'array';
-        elementType: Type;
+    interface ReferenceTypeMap {
+        [refName: string]: Tsoa.ReferenceType;
     }
 }

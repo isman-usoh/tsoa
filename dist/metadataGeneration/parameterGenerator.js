@@ -44,7 +44,7 @@ var ParameterGenerator = (function () {
             in: 'request',
             name: parameterName,
             required: !parameter.questionToken,
-            type: { typeName: 'object' },
+            type: { dataType: 'object' },
             parameterName: parameterName,
             validators: validatorUtils_1.getParameterValidators(this.parameter, parameterName),
         };
@@ -53,7 +53,7 @@ var ParameterGenerator = (function () {
         var parameterName = parameter.name.text;
         var type = this.getValidatedType(parameter);
         if (!this.supportBodyMethod(this.method)) {
-            throw new exceptions_1.GenerateMetadataError(parameter, "Body can't support '" + this.getCurrentLocation() + "' method.");
+            throw new exceptions_1.GenerateMetadataError("Body can't support '" + this.getCurrentLocation() + "' method.");
         }
         return {
             description: this.getParameterDescription(parameter),
@@ -69,7 +69,7 @@ var ParameterGenerator = (function () {
         var parameterName = parameter.name.text;
         var type = this.getValidatedType(parameter);
         if (!this.supportBodyMethod(this.method)) {
-            throw new exceptions_1.GenerateMetadataError(parameter, "Body can't support " + this.method + " method");
+            throw new exceptions_1.GenerateMetadataError("Body can't support " + this.method + " method");
         }
         return {
             description: this.getParameterDescription(parameter),
@@ -83,9 +83,9 @@ var ParameterGenerator = (function () {
     };
     ParameterGenerator.prototype.getHeaderParameter = function (parameter) {
         var parameterName = parameter.name.text;
-        var type = this.getValidatedType(parameter);
+        var type = this.getValidatedType(parameter, false);
         if (!this.supportPathDataType(type)) {
-            throw new exceptions_1.GenerateMetadataError(parameter, "Parameter '" + parameterName + "' can't be passed as a header parameter in '" + this.getCurrentLocation() + "'.");
+            throw new exceptions_1.GenerateMetadataError("Parameter '" + parameterName + "' can't be passed as a header parameter in '" + this.getCurrentLocation() + "'.");
         }
         return {
             description: this.getParameterDescription(parameter),
@@ -99,16 +99,16 @@ var ParameterGenerator = (function () {
     };
     ParameterGenerator.prototype.getQueryParameter = function (parameter) {
         var parameterName = parameter.name.text;
-        var type = this.getValidatedType(parameter);
-        if (type.typeName === 'array') {
+        var type = this.getValidatedType(parameter, false);
+        if (type.dataType === 'array') {
             var arrayType = type;
             if (!this.supportPathDataType(arrayType.elementType)) {
-                throw new exceptions_1.GenerateMetadataError(parameter, "Parameter '" + parameterName + "' can't be passed array as a query parameter in '" + this.getCurrentLocation() + "'.");
+                throw new exceptions_1.GenerateMetadataError("Parameter '" + parameterName + "' can't be passed array as a query parameter in '" + this.getCurrentLocation() + "'.");
             }
         }
         else {
             if (!this.supportPathDataType(type)) {
-                throw new exceptions_1.GenerateMetadataError(parameter, "Parameter '" + parameterName + "' can't be passed as a query parameter in '" + this.getCurrentLocation() + "'.");
+                throw new exceptions_1.GenerateMetadataError("Parameter '" + parameterName + "' can't be passed as a query parameter in '" + this.getCurrentLocation() + "'.");
             }
         }
         return {
@@ -123,13 +123,13 @@ var ParameterGenerator = (function () {
     };
     ParameterGenerator.prototype.getPathParameter = function (parameter) {
         var parameterName = parameter.name.text;
-        var type = this.getValidatedType(parameter);
+        var type = this.getValidatedType(parameter, false);
         var pathName = decoratorUtils_1.getDecoratorTextValue(this.parameter, function (ident) { return ident.text === 'Path'; }) || parameterName;
         if (!this.supportPathDataType(type)) {
-            throw new exceptions_1.GenerateMetadataError(parameter, "Parameter '" + parameterName + ":" + type + "' can't be passed as a path parameter in '" + this.getCurrentLocation() + "'.");
+            throw new exceptions_1.GenerateMetadataError("Parameter '" + parameterName + ":" + type + "' can't be passed as a path parameter in '" + this.getCurrentLocation() + "'.");
         }
         if (!this.path.includes("{" + pathName + "}")) {
-            throw new exceptions_1.GenerateMetadataError(parameter, "Parameter '" + parameterName + "' can't match in path: '" + this.path + "'");
+            throw new exceptions_1.GenerateMetadataError("Parameter '" + parameterName + "' can't match in path: '" + this.path + "'");
         }
         return {
             description: this.getParameterDescription(parameter),
@@ -159,13 +159,14 @@ var ParameterGenerator = (function () {
         return ['header', 'query', 'parem', 'body', 'bodyprop', 'request'].some(function (d) { return d === decoratorName.toLocaleLowerCase(); });
     };
     ParameterGenerator.prototype.supportPathDataType = function (parameterType) {
-        return ['string', 'integer', 'long', 'float', 'double', 'date', 'datetime', 'buffer', 'boolean', 'enum'].find(function (t) { return t === parameterType.typeName; });
+        return ['string', 'integer', 'long', 'float', 'double', 'date', 'datetime', 'buffer', 'boolean', 'enum'].find(function (t) { return t === parameterType.dataType; });
     };
-    ParameterGenerator.prototype.getValidatedType = function (parameter) {
+    ParameterGenerator.prototype.getValidatedType = function (parameter, extractEnum) {
+        if (extractEnum === void 0) { extractEnum = true; }
         if (!parameter.type) {
-            throw new exceptions_1.GenerateMetadataError(parameter, "Parameter " + parameter.name + " doesn't have a valid type assigned in '" + this.getCurrentLocation() + "'.");
+            throw new exceptions_1.GenerateMetadataError("Parameter " + parameter.name + " doesn't have a valid type assigned in '" + this.getCurrentLocation() + "'.");
         }
-        return resolveType_1.ResolveType(parameter.type);
+        return resolveType_1.ResolveType(parameter.type, extractEnum);
     };
     return ParameterGenerator;
 }());

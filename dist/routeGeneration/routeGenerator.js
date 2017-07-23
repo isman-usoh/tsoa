@@ -9,20 +9,22 @@ var RouteGenerator = (function () {
     function RouteGenerator(metadata, options) {
         this.metadata = metadata;
         this.options = options;
+        this.tsfmtConfig = {
+            editorconfig: true,
+            replace: true,
+            tsconfig: true,
+            tsfmt: true,
+            tslint: true,
+            verify: true,
+            vscode: true,
+        };
     }
     RouteGenerator.prototype.GenerateRoutes = function (middlewareTemplate, pathTransformer) {
+        var _this = this;
         var fileName = this.options.routesDir + "/routes.ts";
         var content = this.buildContent(middlewareTemplate, pathTransformer);
         return new Promise(function (resolve, reject) {
-            tsfmt.processString(fileName, content, {
-                editorconfig: true,
-                replace: true,
-                tsconfig: true,
-                tsfmt: true,
-                tslint: true,
-                verify: true,
-                vscode: true,
-            })
+            tsfmt.processString(fileName, content, _this.tsfmtConfig)
                 .then(function (result) {
                 fs.writeFile(fileName, result.dest, function (err) {
                     if (err) {
@@ -68,12 +70,12 @@ var RouteGenerator = (function () {
             authenticationModule: authenticationModule,
             basePath: this.options.basePath === '/' ? '' : this.options.basePath,
             canImportByAlias: canImportByAlias,
-            controllers: this.metadata.Controllers.map(function (controller) {
+            controllers: this.metadata.controllers.map(function (controller) {
                 return {
                     actions: controller.methods.map(function (method) {
                         var parameterObjs = {};
                         method.parameters.forEach(function (parameter) {
-                            parameterObjs[parameter.parameterName] = _this.getParameterSchema(parameter);
+                            parameterObjs[parameter.parameterName] = _this.buildParameterSchema(parameter);
                         });
                         return {
                             method: method.method.toLowerCase(),
@@ -90,104 +92,85 @@ var RouteGenerator = (function () {
             }),
             environment: process.env,
             iocModule: iocModule,
-            models: this.getModels(),
-            useSecurity: this.metadata.Controllers.some(function (controller) { return controller.methods.some(function (methods) { return methods.security !== undefined; }); }),
+            models: this.buildModels(),
+            useSecurity: this.metadata.controllers.some(function (controller) { return controller.methods.some(function (methods) { return methods.security !== undefined; }); }),
         });
     };
-    RouteGenerator.prototype.getModels = function () {
+    RouteGenerator.prototype.buildModels = function () {
         var _this = this;
-        return Object.keys(this.metadata.ReferenceTypes).map(function (key) {
-            var referenceType = _this.metadata.ReferenceTypes[key];
+        var models = {};
+        Object.keys(this.metadata.referenceTypeMap).forEach(function (name) {
+            var referenceType = _this.metadata.referenceTypeMap[name];
             var properties = {};
-            referenceType.properties.map(function (property) {
-                properties[property.name] = _this.getPropertySchema(property);
-            });
-            var templateModel = {
-                name: key,
-                properties: properties,
+            if (referenceType.properties) {
+                referenceType.properties.map(function (property) {
+                    properties[property.name] = _this.buildPropertySchema(property);
+                });
+            }
+            var modelSchema = {
+                enums: referenceType.enums,
+                properties: Object.keys(properties).length === 0 ? undefined : properties,
             };
             if (referenceType.additionalProperties) {
-                templateModel.additionalProperties = _this.getTemplateAdditionalProperty(referenceType.additionalProperties);
+                modelSchema.additionalProperties = _this.buildProperty(referenceType.additionalProperties);
             }
-            return templateModel;
+            models[name] = modelSchema;
         });
+        return models;
     };
     RouteGenerator.prototype.getRelativeImportPath = function (fileLocation) {
         fileLocation = fileLocation.replace('.ts', '');
         return "./" + path.relative(this.options.routesDir, fileLocation).replace(/\\/g, '/');
     };
-    RouteGenerator.prototype.getPropertySchema = function (source) {
-        var propertySchema = {
-            required: source.required,
-            typeName: source.type.typeName,
-        };
+    RouteGenerator.prototype.buildPropertySchema = function (source) {
+        var propertySchema = this.buildProperty(source.type);
+        propertySchema.required = source.required ? true : undefined;
         if (Object.keys(source.validators).length > 0) {
             propertySchema.validators = source.validators;
         }
-        var arrayType = source.type;
-        if (arrayType.elementType) {
-            var arraySchema = {
-                typeName: arrayType.elementType.typeName,
-            };
-            var arrayEnumType = arrayType.elementType;
-            if (arrayEnumType.members) {
-                arraySchema.enumMembers = arrayEnumType.members;
-            }
-            propertySchema.array = arraySchema;
-        }
-        var enumType = source.type;
-        if (enumType.members) {
-            propertySchema.enumMembers = enumType.members;
-        }
         return propertySchema;
     };
-    RouteGenerator.prototype.getTemplateAdditionalProperty = function (type) {
-        var templateAdditionalProperty = {
-            typeName: type.typeName,
-        };
-        var arrayType = type;
-        if (arrayType.elementType) {
-            var arraySchema = {
-                typeName: arrayType.elementType.typeName,
-            };
-            var arrayEnumType = arrayType.elementType;
-            if (arrayEnumType.members) {
-                arraySchema.enumMembers = arrayEnumType.members;
-            }
-            templateAdditionalProperty.array = arraySchema;
-        }
-        var enumType = type;
-        if (enumType.members) {
-            templateAdditionalProperty.enumMembers = enumType.members;
-        }
-        return templateAdditionalProperty;
-    };
-    RouteGenerator.prototype.getParameterSchema = function (source) {
-        var parameterSchema = {
+    RouteGenerator.prototype.buildParameterSchema = function (source) {
+        var property = this.buildProperty(source.type);
+        var parameter = {
             in: source.in,
             name: source.name,
             required: source.required ? true : undefined,
-            typeName: source.type.typeName,
         };
+        var parameterSchema = Object.assign(parameter, property);
         if (Object.keys(source.validators).length > 0) {
             parameterSchema.validators = source.validators;
         }
-        var arrayType = source.type;
-        if (arrayType.elementType) {
-            var tempArrayType = {
-                typeName: arrayType.elementType.typeName,
-            };
-            var arrayEnumType = arrayType.elementType;
-            if (arrayEnumType.members) {
-                tempArrayType.enumMembers = arrayEnumType.members;
-            }
-            parameterSchema.array = tempArrayType;
-        }
-        var enumType = source.type;
-        if (enumType.members) {
-            parameterSchema.enumMembers = enumType.members;
-        }
         return parameterSchema;
+    };
+    RouteGenerator.prototype.buildProperty = function (type) {
+        var schema = {
+            dataType: type.dataType,
+        };
+        var referenceType = type;
+        if (referenceType.refName) {
+            schema.dataType = undefined;
+            schema.ref = referenceType.refName;
+        }
+        if (type.dataType === 'array') {
+            var arrayType = type;
+            var arrayRefType = arrayType.elementType;
+            if (arrayRefType.refName) {
+                schema.array = {
+                    ref: arrayRefType.refName,
+                };
+            }
+            else {
+                schema.array = {
+                    dataType: arrayType.elementType.dataType,
+                    enums: arrayType.elementType.enums,
+                };
+            }
+        }
+        if (type.dataType === 'enum') {
+            schema.enums = type.enums;
+        }
+        return schema;
     };
     return RouteGenerator;
 }());

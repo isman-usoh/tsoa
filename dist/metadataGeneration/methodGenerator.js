@@ -15,10 +15,10 @@ var MethodGenerator = (function () {
     };
     MethodGenerator.prototype.Generate = function () {
         if (!this.IsValid()) {
-            throw new exceptions_1.GenerateMetadataError(this.node, 'This isn\'t a valid a controller method.');
+            throw new exceptions_1.GenerateMetadataError('This isn\'t a valid a controller method.');
         }
         if (!this.node.type) {
-            throw new exceptions_1.GenerateMetadataError(this.node, 'Controller methods must have a return type.');
+            throw new exceptions_1.GenerateMetadataError('Controller methods must have a return type.');
         }
         var identifier = this.node.name;
         var type = resolveType_1.ResolveType(this.node.type);
@@ -48,16 +48,16 @@ var MethodGenerator = (function () {
                 var methodId = _this.node.name;
                 var controllerId = _this.node.parent.name;
                 var parameterId = p.name;
-                throw new exceptions_1.GenerateMetadataError(_this.node, "Error generate parameter method: '" + controllerId.text + "." + methodId.text + "' argument: " + parameterId.text + " " + e);
+                throw new exceptions_1.GenerateMetadataError("Error generate parameter method: '" + controllerId.text + "." + methodId.text + "' argument: " + parameterId.text + " " + e);
             }
         });
         var bodyParameters = parameters.filter(function (p) { return p.in === 'body'; });
         var bodyProps = parameters.filter(function (p) { return p.in === 'body-prop'; });
         if (bodyParameters.length > 1) {
-            throw new exceptions_1.GenerateMetadataError(this.node, "Only one body parameter allowed in '" + this.getCurrentLocation() + "' method.");
+            throw new exceptions_1.GenerateMetadataError("Only one body parameter allowed in '" + this.getCurrentLocation() + "' method.");
         }
         if (bodyParameters.length > 0 && bodyProps.length > 0) {
-            throw new exceptions_1.GenerateMetadataError(this.node, "Choose either during @Body or @BodyProp in '" + this.getCurrentLocation() + "' method.");
+            throw new exceptions_1.GenerateMetadataError("Choose either during @Body or @BodyProp in '" + this.getCurrentLocation() + "' method.");
         }
         return parameters;
     };
@@ -73,7 +73,7 @@ var MethodGenerator = (function () {
             return;
         }
         if (pathDecorators.length > 1) {
-            throw new exceptions_1.GenerateMetadataError(this.node, "Only one path decorator in '" + this.getCurrentLocation + "' method, Found: " + pathDecorators.map(function (d) { return d.text; }).join(', '));
+            throw new exceptions_1.GenerateMetadataError("Only one path decorator in '" + this.getCurrentLocation + "' method, Found: " + pathDecorators.map(function (d) { return d.text; }).join(', '));
         }
         var decorator = pathDecorators[0];
         var expression = decorator.parent;
@@ -119,14 +119,14 @@ var MethodGenerator = (function () {
         var decorators = decoratorUtils_1.getDecorators(this.node, function (identifier) { return identifier.text === 'SuccessResponse'; });
         if (!decorators || !decorators.length) {
             return {
-                description: type.typeName === 'void' ? 'No content' : 'Ok',
+                description: type.dataType === 'void' ? 'No content' : 'Ok',
                 examples: this.getMethodSuccessExamples(),
-                name: type.typeName === 'void' ? '204' : '200',
+                name: type.dataType === 'void' ? '204' : '200',
                 schema: type,
             };
         }
         if (decorators.length > 1) {
-            throw new exceptions_1.GenerateMetadataError(this.node, "Only one SuccessResponse decorator allowed in '" + this.getCurrentLocation + "' method.");
+            throw new exceptions_1.GenerateMetadataError("Only one SuccessResponse decorator allowed in '" + this.getCurrentLocation + "' method.");
         }
         var decorator = decorators[0];
         var expression = decorator.parent;
@@ -152,7 +152,7 @@ var MethodGenerator = (function () {
             return undefined;
         }
         if (exampleDecorators.length > 1) {
-            throw new exceptions_1.GenerateMetadataError(this.node, "Only one Example decorator allowed in '" + this.getCurrentLocation + "' method.");
+            throw new exceptions_1.GenerateMetadataError("Only one Example decorator allowed in '" + this.getCurrentLocation + "' method.");
         }
         var decorator = exampleDecorators[0];
         var expression = decorator.parent;
@@ -160,7 +160,7 @@ var MethodGenerator = (function () {
         return this.getExamplesValue(argument);
     };
     MethodGenerator.prototype.supportsPathMethod = function (method) {
-        return ['get', 'post', 'patch', 'delete', 'put'].some(function (m) { return m === method.toLowerCase(); });
+        return ['get', 'post', 'put', 'patch', 'delete'].some(function (m) { return m === method.toLowerCase(); });
     };
     MethodGenerator.prototype.getExamplesValue = function (argument) {
         var example = {};
@@ -175,7 +175,7 @@ var MethodGenerator = (function () {
             return [];
         }
         if (tagsDecorators.length > 1) {
-            throw new exceptions_1.GenerateMetadataError(this.node, "Only one Tags decorator allowed in '" + this.getCurrentLocation + "' method.");
+            throw new exceptions_1.GenerateMetadataError("Only one Tags decorator allowed in '" + this.getCurrentLocation + "' method.");
         }
         var decorator = tagsDecorators[0];
         var expression = decorator.parent;
@@ -187,7 +187,7 @@ var MethodGenerator = (function () {
             return undefined;
         }
         if (securityDecorators.length > 1) {
-            throw new exceptions_1.GenerateMetadataError(this.node, "Only one Security decorator allowed in '" + this.getCurrentLocation + "' method.");
+            throw new exceptions_1.GenerateMetadataError("Only one Security decorator allowed in '" + this.getCurrentLocation + "' method.");
         }
         var decorator = securityDecorators[0];
         var expression = decorator.parent;

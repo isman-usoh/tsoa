@@ -5,7 +5,7 @@ var controllerGenerator_1 = require("./controllerGenerator");
 var MetadataGenerator = (function () {
     function MetadataGenerator(entryFile, compilerOptions) {
         this.nodes = new Array();
-        this.referenceTypes = {};
+        this.referenceTypeMap = {};
         this.circularDependencyResolvers = new Array();
         this.program = ts.createProgram([entryFile], compilerOptions || {});
         this.typeChecker = this.program.getTypeChecker();
@@ -20,20 +20,23 @@ var MetadataGenerator = (function () {
             });
         });
         var controllers = this.buildControllers();
-        this.circularDependencyResolvers.forEach(function (c) { return c(_this.referenceTypes); });
+        this.circularDependencyResolvers.forEach(function (c) { return c(_this.referenceTypeMap); });
         return {
-            Controllers: controllers,
-            ReferenceTypes: this.referenceTypes,
+            controllers: controllers,
+            referenceTypeMap: this.referenceTypeMap,
         };
     };
     MetadataGenerator.prototype.TypeChecker = function () {
         return this.typeChecker;
     };
     MetadataGenerator.prototype.AddReferenceType = function (referenceType) {
-        this.referenceTypes[referenceType.typeName] = referenceType;
+        if (!referenceType.refName) {
+            return;
+        }
+        this.referenceTypeMap[referenceType.refName] = referenceType;
     };
-    MetadataGenerator.prototype.GetReferenceType = function (typeName) {
-        return this.referenceTypes[typeName];
+    MetadataGenerator.prototype.GetReferenceType = function (refName) {
+        return this.referenceTypeMap[refName];
     };
     MetadataGenerator.prototype.OnFinish = function (callback) {
         this.circularDependencyResolvers.push(callback);

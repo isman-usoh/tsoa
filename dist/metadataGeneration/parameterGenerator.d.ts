@@ -17,5 +17,5 @@ export declare class ParameterGenerator {
     private supportBodyMethod(method);
     private supportParameterDecorator(decoratorName);
     private supportPathDataType(parameterType);
-    private getValidatedType(parameter);
+    private getValidatedType(parameter, extractEnum?);
 }

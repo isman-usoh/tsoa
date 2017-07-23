@@ -13,9 +13,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var ts = require("typescript");
 var GenerateMetadataError = (function (_super) {
     __extends(GenerateMetadataError, _super);
-    function GenerateMetadataError(node, message) {
-        var _this = _super.call(this) || this;
-        _this.message = message + "\n in: " + getSourceFile(node);
+    function GenerateMetadataError(message, node) {
+        var _this = _super.call(this, message) || this;
+        if (node) {
+            _this.message = message + "\n in: " + getSourceFile(node);
+        }
         return _this;
     }
     return GenerateMetadataError;

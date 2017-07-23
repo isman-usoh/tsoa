@@ -73,6 +73,7 @@ export interface SwaggerConfig {
     securityDefinitions?: {
         [name: string]: Swagger.Secuirty;
     };
+    yaml?: boolean;
 }
 export interface RoutesConfig {
     /**

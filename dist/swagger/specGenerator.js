@@ -48,17 +48,28 @@ var SpecGenerator = (function () {
     SpecGenerator.prototype.buildDefinitions = function () {
         var _this = this;
         var definitions = {};
-        Object.keys(this.metadata.ReferenceTypes).map(function (typeName) {
-            var referenceType = _this.metadata.ReferenceTypes[typeName];
-            var required = referenceType.properties.filter(function (p) { return p.required; }).map(function (p) { return p.name; });
-            definitions[referenceType.typeName] = {
-                description: referenceType.description,
-                properties: _this.buildProperties(referenceType.properties),
-                required: required && required.length > 0 ? Array.from(new Set(required)) : undefined,
-                type: 'object',
-            };
-            if (referenceType.additionalProperties) {
-                definitions[referenceType.typeName].additionalProperties = _this.buildAdditionalProperties(referenceType.additionalProperties);
+        Object.keys(this.metadata.referenceTypeMap).map(function (typeName) {
+            var referenceType = _this.metadata.referenceTypeMap[typeName];
+            // Object definition
+            if (referenceType.properties) {
+                var required = referenceType.properties.filter(function (p) { return p.required; }).map(function (p) { return p.name; });
+                definitions[referenceType.refName] = {
+                    description: referenceType.description,
+                    properties: _this.buildProperties(referenceType.properties),
+                    required: required && required.length > 0 ? Array.from(new Set(required)) : undefined,
+                    type: 'object',
+                };
+                if (referenceType.additionalProperties) {
+                    definitions[referenceType.refName].additionalProperties = _this.buildAdditionalProperties(referenceType.additionalProperties);
+                }
+            }
+            // Enum definition
+            if (referenceType.enums) {
+                definitions[referenceType.refName] = {
+                    description: referenceType.description,
+                    enum: referenceType.enums,
+                    type: 'string',
+                };
             }
         });
         return definitions;
@@ -66,16 +77,16 @@ var SpecGenerator = (function () {
     SpecGenerator.prototype.buildPaths = function () {
         var _this = this;
         var paths = {};
-        this.metadata.Controllers.forEach(function (controller) {
+        this.metadata.controllers.forEach(function (controller) {
             controller.methods.forEach(function (method) {
                 var path = "" + (controller.path ? "/" + controller.path : '') + method.path;
                 paths[path] = paths[path] || {};
-                _this.buildPathMethod(controller.name, method, paths[path]);
+                _this.buildMethod(controller.name, method, paths[path]);
             });
         });
         return paths;
     };
-    SpecGenerator.prototype.buildPathMethod = function (controllerName, method, pathObject) {
+    SpecGenerator.prototype.buildMethod = function (controllerName, method, pathObject) {
         var _this = this;
         var pathMethod = pathObject[method.method] = this.buildOperation(controllerName, method);
         pathMethod.description = method.description;
@@ -112,7 +123,9 @@ var SpecGenerator = (function () {
             .filter(function (p) { return p.in === 'body-prop'; })
             .forEach(function (p) {
             properties[p.name] = _this.getSwaggerType(p.type);
-            properties[p.name].description = p.description;
+            if (!properties[p.name].$ref) {
+                properties[p.name].description = p.description;
+            }
             if (p.required) {
                 required.push(p.name);
             }
@@ -148,6 +161,7 @@ var SpecGenerator = (function () {
         else {
             swaggerParameter.type = parameterType.type;
             swaggerParameter.items = parameterType.items;
+            swaggerParameter.enum = parameterType.enum;
         }
         if (parameterType.format) {
             swaggerParameter.format = parameterType.format;
@@ -190,7 +204,7 @@ var SpecGenerator = (function () {
             swaggerResponses[res.name] = {
                 description: res.description,
             };
-            if (res.schema && res.schema.typeName !== 'void') {
+            if (res.schema && res.schema.dataType !== 'void') {
                 swaggerResponses[res.name]['schema'] = _this.getSwaggerType(res.schema);
             }
             if (res.examples) {
@@ -212,19 +226,16 @@ var SpecGenerator = (function () {
         if (swaggerType) {
             return swaggerType;
         }
-        var arrayType = type;
-        if (arrayType.elementType) {
-            return this.getSwaggerTypeForArrayType(arrayType);
+        if (type.dataType === 'array') {
+            return this.getSwaggerTypeForArrayType(type);
         }
-        var enumType = type;
-        if (enumType.members) {
-            return this.getSwaggerTypeForEnumType(enumType);
+        if (type.dataType === 'enum') {
+            return this.getSwaggerTypeForEnumType(type);
         }
-        var refType = this.getSwaggerTypeForReferenceType(type);
-        return refType;
+        return this.getSwaggerTypeForReferenceType(type);
     };
     SpecGenerator.prototype.getSwaggerTypeForPrimitiveType = function (type) {
-        var typeMap = {
+        var map = {
             binary: { type: 'string', format: 'binary' },
             boolean: { type: 'boolean' },
             buffer: { type: 'string', format: 'byte' },
@@ -238,16 +249,16 @@ var SpecGenerator = (function () {
             object: { type: 'object' },
             string: { type: 'string' },
         };
-        return typeMap[type.typeName];
+        return map[type.dataType];
     };
     SpecGenerator.prototype.getSwaggerTypeForArrayType = function (arrayType) {
         return { type: 'array', items: this.getSwaggerType(arrayType.elementType) };
     };
     SpecGenerator.prototype.getSwaggerTypeForEnumType = function (enumType) {
-        return { type: 'string', enum: enumType.members.map(function (member) { return member; }) };
+        return { type: 'string', enum: enumType.enums.map(function (member) { return String(member); }) };
     };
     SpecGenerator.prototype.getSwaggerTypeForReferenceType = function (referenceType) {
-        return { $ref: "#/definitions/" + referenceType.typeName };
+        return { $ref: "#/definitions/" + referenceType.refName };
     };
     return SpecGenerator;
 }());
