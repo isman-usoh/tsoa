@@ -287,6 +287,9 @@ function validateString(name, value, fieldErrors, validators, parent) {
 exports.validateString = validateString;
 function validateBool(name, value, fieldErrors, validators, parent) {
     if (parent === void 0) { parent = ''; }
+    if (value === undefined || value === null) {
+        return false;
+    }
     if (value === true || value === false) {
         return value;
     }
@@ -306,7 +309,7 @@ function validateBool(name, value, fieldErrors, validators, parent) {
 exports.validateBool = validateBool;
 function validateArray(name, value, fieldErrors, schema, validators, parent) {
     if (parent === void 0) { parent = ''; }
-    if (!schema || !Array.isArray(value)) {
+    if (!schema || value === undefined || value === null) {
         var message = (validators && validators.isArray && validators.isArray.errorMsg) ? validators.isArray.errorMsg : "invalid array";
         fieldErrors[parent + name] = {
             message: message,
@@ -314,9 +317,17 @@ function validateArray(name, value, fieldErrors, schema, validators, parent) {
         };
         return;
     }
-    var arrayValue = value.map(function (v, index) {
-        return ValidateParam(schema, v, models, "$" + index, fieldErrors, name + '.');
-    });
+    var arrayValue = [];
+    if (Array.isArray(value)) {
+        arrayValue = value.map(function (elementValue, index) {
+            return ValidateParam(schema, elementValue, models, "$" + index, fieldErrors, name + '.');
+        });
+    }
+    else {
+        arrayValue = [
+            ValidateParam(schema, value, models, '$0', fieldErrors, name + '.'),
+        ];
+    }
     if (!validators) {
         return arrayValue;
     }
