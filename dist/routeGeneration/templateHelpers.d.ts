@@ -1,10 +1,10 @@
 import { TsoaRoute } from './tsoa-route';
 export declare function ValidateParam(property: TsoaRoute.PropertySchema, value: any, generatedModels: TsoaRoute.Models, name: string | undefined, fieldErrors: FieldErrors, parent?: string): any;
-export declare function validateInt(name: string, value: any, fieldErrors: FieldErrors, validators?: IntegerValidator, parent?: string): any;
-export declare function validateFloat(name: string, value: any, fieldErrors: FieldErrors, validators?: FloatValidator, parent?: string): any;
+export declare function validateInt(name: string, value: any, fieldErrors: FieldErrors, validators?: IntegerValidator, parent?: string): number | undefined;
+export declare function validateFloat(name: string, value: any, fieldErrors: FieldErrors, validators?: FloatValidator, parent?: string): number | undefined;
 export declare function validateEnum(name: string, value: any, fieldErrors: FieldErrors, members?: string[], parent?: string): any;
-export declare function validateDate(name: string, value: any, fieldErrors: FieldErrors, validators?: DateValidator, parent?: string): any;
-export declare function validateDateTime(name: string, value: any, fieldErrors: FieldErrors, validators?: DateTimeValidator, parent?: string): any;
+export declare function validateDate(name: string, value: any, fieldErrors: FieldErrors, validators?: DateValidator, parent?: string): Date | undefined;
+export declare function validateDateTime(name: string, value: any, fieldErrors: FieldErrors, validators?: DateTimeValidator, parent?: string): Date | undefined;
 export declare function validateString(name: string, value: any, fieldErrors: FieldErrors, validators?: StringValidator, parent?: string): string | undefined;
 export declare function validateBool(name: string, value: any, fieldErrors: FieldErrors, validators?: BooleanValidator, parent?: string): any;
 export declare function validateArray(name: string, value: any[], fieldErrors: FieldErrors, schema?: TsoaRoute.PropertySchema, validators?: ArrayValidator, parent?: string): any[] | undefined;

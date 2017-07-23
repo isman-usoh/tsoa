@@ -77,7 +77,7 @@ function validateInt(name, value, fieldErrors, validators, parent) {
     }
     var numberValue = validator.toInt(String(value), 10);
     if (!validators) {
-        return value;
+        return numberValue;
     }
     if (validators.minimum && validators.minimum.value) {
         if (validators.minimum.value > numberValue) {
@@ -120,7 +120,7 @@ function validateFloat(name, value, fieldErrors, validators, parent) {
     }
     var numberValue = validator.toFloat(String(value));
     if (!validators) {
-        return value;
+        return numberValue;
     }
     if (validators.minimum && validators.minimum.value) {
         if (validators.minimum.value > numberValue) {
@@ -178,7 +178,7 @@ function validateDate(name, value, fieldErrors, validators, parent) {
     }
     var dateValue = new Date(String(value));
     if (!validators) {
-        return value;
+        return dateValue;
     }
     if (validators.minDate && validators.minDate.value) {
         var minDate = new Date(validators.minDate.value);
@@ -216,7 +216,7 @@ function validateDateTime(name, value, fieldErrors, validators, parent) {
     }
     var datetimeValue = new Date(String(value));
     if (!validators) {
-        return value;
+        return datetimeValue;
     }
     if (validators.minDate && validators.minDate.value) {
         var minDate = new Date(validators.minDate.value);
@@ -253,7 +253,7 @@ function validateString(name, value, fieldErrors, validators, parent) {
     }
     var stringValue = String(value);
     if (!validators) {
-        return value;
+        return stringValue;
     }
     if (validators.minLength && validators.minLength.value) {
         if (validators.minLength.value > stringValue.length) {
