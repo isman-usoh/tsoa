@@ -27,7 +27,24 @@ function ResolveType(typeNode, extractEnum) {
         };
     }
     if (typeNode.kind === ts.SyntaxKind.UnionType) {
-        return { dataType: 'object' };
+        var unionType = typeNode;
+        var supportType = unionType.types.some(function (type) { return type.kind === ts.SyntaxKind.LiteralType; });
+        if (supportType) {
+            return {
+                dataType: 'enum',
+                enums: unionType.types.map(function (type) {
+                    var literalType = type.literal;
+                    switch (literalType.kind) {
+                        case ts.SyntaxKind.TrueKeyword: return 'true';
+                        case ts.SyntaxKind.FalseKeyword: return 'false';
+                        default: return String(literalType.text);
+                    }
+                }),
+            };
+        }
+        else {
+            return { dataType: 'object' };
+        }
     }
     if (typeNode.kind !== ts.SyntaxKind.TypeReference) {
         throw new exceptions_1.GenerateMetadataError("Unknown type: " + ts.SyntaxKind[typeNode.kind]);
