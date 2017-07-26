@@ -50,10 +50,13 @@ function ValidateParam(property, value, generatedModels, name, fieldErrors, pare
             return validateDateTime(name, value, fieldErrors, property.validators, parent);
         case 'buffer':
             return validateBuffer(name, value);
+        case 'any':
+            return value;
         default:
             if (property.ref) {
                 return validateModel(name, value, property.ref, fieldErrors, parent);
             }
+            return value;
     }
 }
 exports.ValidateParam = ValidateParam;

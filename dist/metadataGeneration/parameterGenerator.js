@@ -53,7 +53,7 @@ var ParameterGenerator = (function () {
         var parameterName = parameter.name.text;
         var type = this.getValidatedType(parameter);
         if (!this.supportBodyMethod(this.method)) {
-            throw new exceptions_1.GenerateMetadataError("Body can't support '" + this.getCurrentLocation() + "' method.");
+            throw new exceptions_1.GenerateMetadataError("@BodyProp('" + parameterName + "') Can't support in " + this.method.toUpperCase() + " method.");
         }
         return {
             description: this.getParameterDescription(parameter),
@@ -69,7 +69,7 @@ var ParameterGenerator = (function () {
         var parameterName = parameter.name.text;
         var type = this.getValidatedType(parameter);
         if (!this.supportBodyMethod(this.method)) {
-            throw new exceptions_1.GenerateMetadataError("Body can't support " + this.method + " method");
+            throw new exceptions_1.GenerateMetadataError("@Body('" + parameterName + "') Can't support in " + this.method.toUpperCase() + " method.");
         }
         return {
             description: this.getParameterDescription(parameter),
@@ -85,7 +85,7 @@ var ParameterGenerator = (function () {
         var parameterName = parameter.name.text;
         var type = this.getValidatedType(parameter, false);
         if (!this.supportPathDataType(type)) {
-            throw new exceptions_1.GenerateMetadataError("Parameter '" + parameterName + "' can't be passed as a header parameter in '" + this.getCurrentLocation() + "'.");
+            throw new exceptions_1.GenerateMetadataError("@Header('" + parameterName + "') Can't support '" + type.dataType + "' type.");
         }
         return {
             description: this.getParameterDescription(parameter),
@@ -103,12 +103,12 @@ var ParameterGenerator = (function () {
         if (type.dataType === 'array') {
             var arrayType = type;
             if (!this.supportPathDataType(arrayType.elementType)) {
-                throw new exceptions_1.GenerateMetadataError("Parameter '" + parameterName + "' can't be passed array as a query parameter in '" + this.getCurrentLocation() + "'.");
+                throw new exceptions_1.GenerateMetadataError("@Query('" + parameterName + "') Can't support array '" + arrayType.elementType.dataType + "' type.");
             }
         }
         else {
             if (!this.supportPathDataType(type)) {
-                throw new exceptions_1.GenerateMetadataError("Parameter '" + parameterName + "' can't be passed as a query parameter in '" + this.getCurrentLocation() + "'.");
+                throw new exceptions_1.GenerateMetadataError("@Query('" + parameterName + "') Can't support '" + type.dataType + "' type.");
             }
         }
         return {
@@ -126,10 +126,10 @@ var ParameterGenerator = (function () {
         var type = this.getValidatedType(parameter, false);
         var pathName = decoratorUtils_1.getDecoratorTextValue(this.parameter, function (ident) { return ident.text === 'Path'; }) || parameterName;
         if (!this.supportPathDataType(type)) {
-            throw new exceptions_1.GenerateMetadataError("Parameter '" + parameterName + ":" + type + "' can't be passed as a path parameter in '" + this.getCurrentLocation() + "'.");
+            throw new exceptions_1.GenerateMetadataError("@Path('" + parameterName + "') Can't support '" + type.dataType + "' type.");
         }
         if (!this.path.includes("{" + pathName + "}")) {
-            throw new exceptions_1.GenerateMetadataError("Parameter '" + parameterName + "' can't match in path: '" + this.path + "'");
+            throw new exceptions_1.GenerateMetadataError("@Path('" + parameterName + "') Can't match in URL: '" + this.path + "'.");
         }
         return {
             description: this.getParameterDescription(parameter),
@@ -159,7 +159,7 @@ var ParameterGenerator = (function () {
         return ['header', 'query', 'parem', 'body', 'bodyprop', 'request'].some(function (d) { return d === decoratorName.toLocaleLowerCase(); });
     };
     ParameterGenerator.prototype.supportPathDataType = function (parameterType) {
-        return ['string', 'integer', 'long', 'float', 'double', 'date', 'datetime', 'buffer', 'boolean', 'enum'].find(function (t) { return t === parameterType.dataType; });
+        return ['string', 'integer', 'long', 'float', 'double', 'date', 'datetime', 'buffer', 'boolean', 'enum', 'any'].find(function (t) { return t === parameterType.dataType; });
     };
     ParameterGenerator.prototype.getValidatedType = function (parameter, extractEnum) {
         if (extractEnum === void 0) { extractEnum = true; }

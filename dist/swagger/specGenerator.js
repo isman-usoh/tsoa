@@ -20,12 +20,6 @@ var SpecGenerator = (function () {
         spec.securityDefinitions = this.config.securityDefinitions
             ? this.config.securityDefinitions
             : {};
-        if (this.config.description) {
-            spec.info.description = this.config.description;
-        }
-        if (this.config.license) {
-            spec.info.license = { name: this.config.license };
-        }
         if (this.config.name) {
             spec.info.title = this.config.name;
         }
@@ -34,6 +28,12 @@ var SpecGenerator = (function () {
         }
         if (this.config.host) {
             spec.host = this.config.host;
+        }
+        if (this.config.description) {
+            spec.info.description = this.config.description;
+        }
+        if (this.config.license) {
+            spec.info.license = { name: this.config.license };
         }
         if (this.config.spec) {
             this.config.specMerging = this.config.specMerging || 'immediate';
@@ -159,9 +159,19 @@ var SpecGenerator = (function () {
             swaggerParameter.schema = parameterType;
         }
         else {
-            swaggerParameter.type = parameterType.type;
-            swaggerParameter.items = parameterType.items;
-            swaggerParameter.enum = parameterType.enum;
+            if (parameter.type.dataType === 'any') {
+                if (parameter.in === 'body') {
+                    swaggerParameter.schema = { type: 'object' };
+                }
+                else {
+                    swaggerParameter.type = 'string';
+                }
+            }
+            else {
+                swaggerParameter.type = parameterType.type;
+                swaggerParameter.items = parameterType.items;
+                swaggerParameter.enum = parameterType.enum;
+            }
         }
         if (parameterType.format) {
             swaggerParameter.format = parameterType.format;
@@ -236,6 +246,7 @@ var SpecGenerator = (function () {
     };
     SpecGenerator.prototype.getSwaggerTypeForPrimitiveType = function (type) {
         var map = {
+            any: { type: 'object' },
             binary: { type: 'string', format: 'binary' },
             boolean: { type: 'boolean' },
             buffer: { type: 'string', format: 'byte' },

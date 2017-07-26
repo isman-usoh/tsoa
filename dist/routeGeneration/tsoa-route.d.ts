@@ -12,7 +12,7 @@ export declare namespace TsoaRoute {
     }
     type ValidatorSchema = Tsoa.Validators;
     interface PropertySchema {
-        dataType?: 'string' | 'boolean' | 'double' | 'float' | 'integer' | 'long' | 'enum' | 'array' | 'datetime' | 'date' | 'buffer' | 'void' | 'object';
+        dataType?: 'string' | 'boolean' | 'double' | 'float' | 'integer' | 'long' | 'enum' | 'array' | 'datetime' | 'date' | 'buffer' | 'void' | 'any' | 'object';
         ref?: string;
         required?: boolean;
         array?: PropertySchema;

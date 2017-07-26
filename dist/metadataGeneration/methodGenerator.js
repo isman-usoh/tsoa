@@ -47,8 +47,7 @@ var MethodGenerator = (function () {
             catch (e) {
                 var methodId = _this.node.name;
                 var controllerId = _this.node.parent.name;
-                var parameterId = p.name;
-                throw new exceptions_1.GenerateMetadataError("Error generate parameter method: '" + controllerId.text + "." + methodId.text + "' argument: " + parameterId.text + " " + e);
+                throw new exceptions_1.GenerateMetadataError(e.message + " \n in '" + controllerId.text + "." + methodId.text + "'");
             }
         });
         var bodyParameters = parameters.filter(function (p) { return p.in === 'body'; });

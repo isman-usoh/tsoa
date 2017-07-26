@@ -46,6 +46,9 @@ function ResolveType(typeNode, extractEnum) {
             return { dataType: 'object' };
         }
     }
+    if (typeNode.kind === ts.SyntaxKind.AnyKeyword) {
+        return { dataType: 'any' };
+    }
     if (typeNode.kind !== ts.SyntaxKind.TypeReference) {
         throw new exceptions_1.GenerateMetadataError("Unknown type: " + ts.SyntaxKind[typeNode.kind]);
     }

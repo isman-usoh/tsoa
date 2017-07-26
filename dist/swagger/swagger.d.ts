@@ -1,6 +1,5 @@
 export declare namespace Swagger {
-    type DataType = 'integer' | 'number' | 'boolean' | 'string';
-    type SchemaDataType = 'integer' | 'number' | 'boolean' | 'string' | 'array' | 'object';
+    type DataType = 'integer' | 'number' | 'boolean' | 'string' | 'array' | 'object';
     type DataFormat = 'int32' | 'int64' | 'float' | 'double' | 'byte' | 'binary' | 'date' | 'date-time' | 'password';
     type Protocol = 'http' | 'https' | 'ws' | 'wss';
     interface Spec {
@@ -147,7 +146,7 @@ export declare namespace Swagger {
         items?: BaseSchema;
     }
     interface Schema extends BaseSchema {
-        type: SchemaDataType;
+        type: DataType;
         format?: DataFormat;
         allOf?: Schema[];
         additionalProperties?: boolean | BaseSchema;
@@ -164,7 +163,7 @@ export declare namespace Swagger {
         required?: string[];
     }
     interface Header extends BaseSchema {
-        type: DataType & 'array';
+        type: 'integer' | 'number' | 'boolean' | 'string' | 'array';
     }
     interface XML {
         type?: string;
