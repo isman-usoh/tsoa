@@ -173,6 +173,9 @@ var SpecGenerator = (function () {
                 swaggerParameter.enum = parameterType.enum;
             }
         }
+        if (swaggerParameter.in === 'query' && swaggerParameter.type === 'array') {
+            swaggerParameter.collectionFormat = 'multi';
+        }
         if (parameterType.format) {
             swaggerParameter.format = parameterType.format;
         }
