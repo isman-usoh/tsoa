@@ -1,8 +1,8 @@
-import * as ts from 'typescript';
 import * as moment from 'moment';
+import * as ts from 'typescript';
+import { GenerateMetadataError } from './../metadataGeneration/exceptions';
 import { Tsoa } from './../metadataGeneration/tsoa';
 import { getJSDocTags } from './jsDocUtils';
-import { GenerateMetadataError } from './../metadataGeneration/exceptions';
 
 export function getParameterValidators(parameter: ts.ParameterDeclaration, parameterName): Tsoa.Validators {
     if (!parameter.parent) { return {}; }

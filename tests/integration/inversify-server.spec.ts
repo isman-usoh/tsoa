@@ -1,13 +1,12 @@
+import { expect } from 'chai';
 import 'mocha';
 import 'reflect-metadata';
+import * as request from 'supertest';
 import { iocContainer } from '../fixtures/inversify/ioc';
 import { ManagedService } from '../fixtures/inversify/managedService';
 import { app } from '../fixtures/inversify/server';
 import { TestModel, TestSubModel } from '../fixtures/testModel';
-import * as chai from 'chai';
-import * as request from 'supertest';
 
-const expect = chai.expect;
 const basePath = '/v1';
 
 describe('Inversify Express Server', () => {
@@ -58,7 +57,7 @@ describe('Inversify Express Server', () => {
   });
 
   function verifyGetRequest(path: string, verifyResponse: (err: any, res: request.Response) => any, expectedStatus?: number) {
-    return verifyRequest(verifyResponse, request => request.get(path), expectedStatus);
+    return verifyRequest(verifyResponse, (request) => request.get(path), expectedStatus);
   }
 
   function verifyRequest(

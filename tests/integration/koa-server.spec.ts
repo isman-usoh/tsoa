@@ -1,10 +1,9 @@
+import { expect } from 'chai';
 import 'mocha';
-import { server } from '../fixtures/koa/server';
-import { GenericModel, GenericRequest, Gender, TestModel, TestClassModel, Model, ParameterTestModel, ValidateModel } from '../fixtures/testModel';
-import * as chai from 'chai';
 import * as request from 'supertest';
+import { server } from '../fixtures/koa/server';
+import { Gender, GenericModel, GenericRequest, Model, ParameterTestModel, TestClassModel, TestModel, ValidateModel } from '../fixtures/testModel';
 
-const expect = chai.expect;
 const basePath = '/v1';
 
 describe('Koa Server', () => {
@@ -470,12 +469,12 @@ describe('Koa Server', () => {
         return request
           .get(basePath + '/ParameterTest/Header')
           .set({
-            'age': 45,
-            'firstname': 'Tony',
-            'gender': 'MALE',
-            'human': true,
-            'last_name': 'Stark',
-            'weight': 82.1,
+            age: 45,
+            firstname: 'Tony',
+            gender: 'MALE',
+            human: true,
+            last_name: 'Stark',
+            weight: 82.1,
           });
       }, 200);
     });

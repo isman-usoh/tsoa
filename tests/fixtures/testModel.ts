@@ -3,8 +3,8 @@
  */
 export interface TestModel extends Model {
   /**
-  * This is a description of this model property, numberValue
-  */
+   * This is a description of this model property, numberValue
+   */
   numberValue: number;
   numberArray: number[];
   stringValue: string;
@@ -238,19 +238,21 @@ export interface Model {
 
 export class TestClassBaseModel {
   public id: number;
+  public defaultValue1 = 'Default Value 1';
 }
 
 /**
  * This is a description of TestClassModel
  */
 export class TestClassModel extends TestClassBaseModel {
+  public defaultValue2 = 'Default Value 2';
   /**
-  * This is a description of a public string property
-  *
-  * @minLength 3
-  * @maxLength 20
-  * @pattern ^[a-zA-Z]+$
-  */
+   * This is a description of a public string property
+   *
+   * @minLength 3
+   * @maxLength 20
+   * @pattern ^[a-zA-Z]+$
+   */
   public publicStringProperty: string;
   /**
    * @minLength 0
@@ -262,8 +264,8 @@ export class TestClassModel extends TestClassBaseModel {
   protected protectedStringProperty: string;
 
   /**
-  * @param publicConstructorVar This is a description for publicConstructorVar
-  */
+   * @param publicConstructorVar This is a description for publicConstructorVar
+   */
   constructor(
     public publicConstructorVar: string,
     protected protectedConstructorVar: string,

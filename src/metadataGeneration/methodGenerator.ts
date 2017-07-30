@@ -1,10 +1,11 @@
 import * as ts from 'typescript';
-import { Tsoa } from './tsoa';
-import { ResolveType } from './resolveType';
-import { ParameterGenerator } from './parameterGenerator';
-import { getJSDocDescription, isExistJSDocTag, getJSDocComment } from './../utils/jsDocUtils';
-import { getDecorators, getInitializerValue } from './../utils/decoratorUtils';
+import { getDecorators } from './../utils/decoratorUtils';
+import { getJSDocComment, getJSDocDescription, isExistJSDocTag } from './../utils/jsDocUtils';
 import { GenerateMetadataError } from './exceptions';
+import { MetadataGenerator } from './metadataGenerator';
+import { ParameterGenerator } from './parameterGenerator';
+import { getInitializerValue, resolveType } from './resolveType';
+import { Tsoa } from './tsoa';
 
 export class MethodGenerator {
   private method: 'get' | 'post' | 'put' | 'patch' | 'delete';
@@ -22,17 +23,22 @@ export class MethodGenerator {
     if (!this.IsValid()) {
       throw new GenerateMetadataError('This isn\'t a valid a controller method.');
     }
-    if (!this.node.type) {
-      throw new GenerateMetadataError('Controller methods must have a return type.');
-    }
 
     const identifier = this.node.name as ts.Identifier;
-    const type = ResolveType(this.node.type);
+
+    let nodeType = this.node.type;
+    if (!nodeType) {
+      const typeChecker = MetadataGenerator.current.typeChecker;
+      const signature = typeChecker.getSignatureFromDeclaration(this.node);
+      const implicitType = typeChecker.getReturnTypeOfSignature(signature!);
+      nodeType = typeChecker.typeToTypeNode(implicitType);
+    }
+    const type = resolveType(nodeType);
     const responses = this.getMethodResponses();
     responses.push(this.getMethodSuccessResponse(type));
 
     return {
-      deprecated: isExistJSDocTag(this.node, tag => tag.tagName.text === 'deprecated'),
+      deprecated: isExistJSDocTag(this.node, (tag) => tag.tagName.text === 'deprecated'),
       description: getJSDocDescription(this.node),
       method: this.method,
       name: identifier.text,
@@ -47,7 +53,7 @@ export class MethodGenerator {
   }
 
   private buildParameters() {
-    const parameters = this.node.parameters.map(p => {
+    const parameters = this.node.parameters.map((p) => {
       try {
         return new ParameterGenerator(p, this.method, this.path).Generate();
       } catch (e) {
@@ -57,8 +63,8 @@ export class MethodGenerator {
       }
     });
 
-    const bodyParameters = parameters.filter(p => p.in === 'body');
-    const bodyProps = parameters.filter(p => p.in === 'body-prop');
+    const bodyParameters = parameters.filter((p) => p.in === 'body');
+    const bodyProps = parameters.filter((p) => p.in === 'body-prop');
 
     if (bodyParameters.length > 1) {
       throw new GenerateMetadataError(`Only one body parameter allowed in '${this.getCurrentLocation()}' method.`);
@@ -76,11 +82,11 @@ export class MethodGenerator {
   }
 
   private processMethodDecorators() {
-    const pathDecorators = getDecorators(this.node, identifier => this.supportsPathMethod(identifier.text));
+    const pathDecorators = getDecorators(this.node, (identifier) => this.supportsPathMethod(identifier.text));
 
     if (!pathDecorators || !pathDecorators.length) { return; }
     if (pathDecorators.length > 1) {
-      throw new GenerateMetadataError(`Only one path decorator in '${this.getCurrentLocation}' method, Found: ${pathDecorators.map(d => d.text).join(', ')}`);
+      throw new GenerateMetadataError(`Only one path decorator in '${this.getCurrentLocation}' method, Found: ${pathDecorators.map((d) => d.text).join(', ')}`);
     }
 
     const decorator = pathDecorators[0];
@@ -95,17 +101,17 @@ export class MethodGenerator {
   }
 
   private getMethodResponses(): Tsoa.Response[] {
-    const decorators = getDecorators(this.node, identifier => identifier.text === 'Response');
+    const decorators = getDecorators(this.node, (identifier) => identifier.text === 'Response');
     if (!decorators || !decorators.length) {
       return [];
     }
 
-    return decorators.map(decorator => {
+    return decorators.map((decorator) => {
       const expression = decorator.parent as ts.CallExpression;
 
       let description = '';
       let name = '200';
-      let examples = undefined;
+      let examples;
       if (expression.arguments.length > 0 && (expression.arguments[0] as any).text) {
         name = (expression.arguments[0] as any).text;
       }
@@ -119,17 +125,17 @@ export class MethodGenerator {
 
       return {
         description,
-        examples: examples,
-        name: name,
+        examples,
+        name,
         schema: (expression.typeArguments && expression.typeArguments.length > 0)
-          ? ResolveType(expression.typeArguments[0])
+          ? resolveType(expression.typeArguments[0])
           : undefined,
       } as Tsoa.Response;
     });
   }
 
   private getMethodSuccessResponse(type: Tsoa.Type): Tsoa.Response {
-    const decorators = getDecorators(this.node, identifier => identifier.text === 'SuccessResponse');
+    const decorators = getDecorators(this.node, (identifier) => identifier.text === 'SuccessResponse');
     if (!decorators || !decorators.length) {
       return {
         description: type.dataType === 'void' ? 'No content' : 'Ok',
@@ -165,7 +171,7 @@ export class MethodGenerator {
   }
 
   private getMethodSuccessExamples() {
-    const exampleDecorators = getDecorators(this.node, identifier => identifier.text === 'Example');
+    const exampleDecorators = getDecorators(this.node, (identifier) => identifier.text === 'Example');
     if (!exampleDecorators || !exampleDecorators.length) {
       return undefined;
     }
@@ -181,7 +187,7 @@ export class MethodGenerator {
   }
 
   private supportsPathMethod(method: string) {
-    return ['get', 'post', 'put', 'patch', 'delete'].some(m => m === method.toLowerCase());
+    return ['get', 'post', 'put', 'patch', 'delete'].some((m) => m === method.toLowerCase());
   }
 
   private getExamplesValue(argument: any) {
@@ -193,7 +199,7 @@ export class MethodGenerator {
   }
 
   private getMethodTags() {
-    const tagsDecorators = getDecorators(this.node, identifier => identifier.text === 'Tags');
+    const tagsDecorators = getDecorators(this.node, (identifier) => identifier.text === 'Tags');
     if (!tagsDecorators || !tagsDecorators.length) {
       return [];
     }
@@ -208,7 +214,7 @@ export class MethodGenerator {
   }
 
   private getMethodSecurity() {
-    const securityDecorators = getDecorators(this.node, identifier => identifier.text === 'Security');
+    const securityDecorators = getDecorators(this.node, (identifier) => identifier.text === 'Security');
     if (!securityDecorators || !securityDecorators.length) {
       return undefined;
     }

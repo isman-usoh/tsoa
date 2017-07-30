@@ -1,17 +1,17 @@
-import * as methodOverride from 'method-override';
-import * as express from 'express';
 import * as bodyParser from 'body-parser';
-import '../controllers/putController';
-import '../controllers/postController';
-import '../controllers/patchController';
-import '../controllers/getController';
+import * as express from 'express';
+import * as methodOverride from 'method-override';
 import '../controllers/deleteController';
+import '../controllers/getController';
+import '../controllers/patchController';
+import '../controllers/postController';
+import '../controllers/putController';
 
 import '../controllers/methodController';
 import '../controllers/parameterController';
 import '../controllers/securityController';
-import '../controllers/validateController';
 import '../controllers/testController';
+import '../controllers/validateController';
 
 import { RegisterRoutes } from './routes';
 

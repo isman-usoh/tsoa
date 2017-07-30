@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
-import { Tsoa } from './tsoa';
-import { MethodGenerator } from './methodGenerator';
 import { GenerateMetadataError } from './exceptions';
+import { MethodGenerator } from './methodGenerator';
+import { Tsoa } from './tsoa';
 
 export class ControllerGenerator {
   private readonly pathValue: string | undefined;
@@ -34,10 +34,10 @@ export class ControllerGenerator {
 
   private buildMethods() {
     return this.node.members
-      .filter(m => m.kind === ts.SyntaxKind.MethodDeclaration)
+      .filter((m) => m.kind === ts.SyntaxKind.MethodDeclaration)
       .map((m: ts.MethodDeclaration) => new MethodGenerator(m))
-      .filter(generator => generator.IsValid())
-      .map(generator => generator.Generate());
+      .filter((generator) => generator.IsValid())
+      .map((generator) => generator.Generate());
   }
 
   private getControllerRouteValue(node: ts.ClassDeclaration) {
@@ -48,8 +48,8 @@ export class ControllerGenerator {
     if (!node.decorators) { return undefined; }
 
     const matchedAttributes = node.decorators
-      .map(d => d.expression as ts.CallExpression)
-      .filter(expression => {
+      .map((d) => d.expression as ts.CallExpression)
+      .filter((expression) => {
         const subExpression = expression.expression as ts.Identifier;
         return subExpression.text === decoratorName;
       });

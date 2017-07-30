@@ -1,8 +1,6 @@
+import { expect } from 'chai';
 import 'mocha';
 import { MetadataGenerator } from '../../../../src/metadataGeneration/metadataGenerator';
-import * as chai from 'chai';
-
-const expect = chai.expect;
 
 describe('Metadata generation', () => {
   const metadata = new MetadataGenerator('./tests/fixtures/controllers/getController.ts').Generate();

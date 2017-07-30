@@ -1,7 +1,6 @@
+import { expect } from 'chai';
 import { Swagger } from '../../../src/swagger/swagger';
-import * as chai from 'chai';
 
-const expect = chai.expect;
 export const modelName = '#/definitions/TestModel';
 
 export function VerifyPath(

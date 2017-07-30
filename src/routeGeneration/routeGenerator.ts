@@ -1,11 +1,11 @@
-import { Tsoa } from '../metadataGeneration/tsoa';
-import { TsoaRoute } from './tsoa-route';
-import { RoutesConfig } from './../config';
 import * as fs from 'fs';
 import * as handlebars from 'handlebars';
+import * as handlebarsHelpers from 'handlebars-helpers';
 import * as path from 'path';
 import * as tsfmt from 'typescript-formatter';
-import * as handlebarsHelpers from 'handlebars-helpers';
+import { Tsoa } from '../metadataGeneration/tsoa';
+import { RoutesConfig } from './../config';
+import { TsoaRoute } from './tsoa-route';
 
 export class RouteGenerator {
   private tsfmtConfig = {
@@ -51,12 +51,12 @@ export class RouteGenerator {
   }
 
   private buildContent(middlewareTemplate: string, pathTransformer: (path: string) => string) {
-    handlebars.registerHelper('json', function (context: any) {
+    handlebars.registerHelper('json', (context: any) => {
       return JSON.stringify(context);
     });
 
     handlebarsHelpers.comparison({
-      handlebars: handlebars,
+      handlebars,
     });
 
     const routesTemplate = handlebars.compile(middlewareTemplate, { noEscape: true });
@@ -74,7 +74,7 @@ export class RouteGenerator {
     return routesTemplate({
       authenticationModule,
       basePath: this.options.basePath === '/' ? '' : this.options.basePath,
-      canImportByAlias: canImportByAlias,
+      canImportByAlias,
       controllers: this.metadata.controllers.map(controller => {
         return {
           actions: controller.methods.map(method => {
@@ -136,6 +136,7 @@ export class RouteGenerator {
 
   private buildPropertySchema(source: Tsoa.Property): TsoaRoute.PropertySchema {
     const propertySchema = this.buildProperty(source.type);
+    propertySchema.default = source.default;
     propertySchema.required = source.required ? true : undefined;
 
     if (Object.keys(source.validators).length > 0) {
@@ -147,6 +148,7 @@ export class RouteGenerator {
   private buildParameterSchema(source: Tsoa.Parameter): TsoaRoute.ParameterSchema {
     const property = this.buildProperty(source.type);
     const parameter = {
+      default: source.default,
       in: source.in,
       name: source.name,
       required: source.required ? true : undefined,

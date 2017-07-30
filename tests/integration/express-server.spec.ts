@@ -1,11 +1,10 @@
+import { expect } from 'chai';
 import 'mocha';
-import { app } from '../fixtures/express/server';
-import { GenericModel, GenericRequest, Gender, TestModel, TestClassModel, UserResponseModel, ParameterTestModel, ValidateModel } from '../fixtures/testModel';
-import * as chai from 'chai';
 import * as request from 'supertest';
 import { base64image } from '../fixtures/base64image';
+import { app } from '../fixtures/express/server';
+import { Gender, GenericModel, GenericRequest, ParameterTestModel, TestClassModel, TestModel, UserResponseModel, ValidateModel } from '../fixtures/testModel';
 
-const expect = chai.expect;
 const basePath = '/v1';
 
 describe('Express Server', () => {
@@ -27,7 +26,7 @@ describe('Express Server', () => {
     return verifyGetRequest(basePath + '/GetTest/Multi', (err, res) => {
       const models = res.body as TestModel[];
       expect(models.length).to.equal(3);
-      models.forEach(m => {
+      models.forEach((m) => {
         expect(m.id).to.equal(1);
       });
     });
@@ -507,12 +506,12 @@ describe('Express Server', () => {
         return request
           .get(basePath + '/ParameterTest/Header')
           .set({
-            'age': 45,
-            'firstname': 'Tony',
-            'gender': 'MALE',
-            'human': true,
-            'last_name': 'Stark',
-            'weight': 82.1,
+            age: 45,
+            firstname: 'Tony',
+            gender: 'MALE',
+            human: true,
+            last_name: 'Stark',
+            weight: 82.1,
           });
       }, 200);
     });
@@ -610,11 +609,11 @@ describe('Express Server', () => {
   });
 
   function verifyGetRequest(path: string, verifyResponse: (err: any, res: request.Response) => any, expectedStatus?: number) {
-    return verifyRequest(verifyResponse, request => request.get(path), expectedStatus);
+    return verifyRequest(verifyResponse, (request) => request.get(path), expectedStatus);
   }
 
   function verifyPostRequest(path: string, data: any, verifyResponse: (err: any, res: request.Response) => any, expectedStatus?: number) {
-    return verifyRequest(verifyResponse, request => request.post(path).send(data), expectedStatus);
+    return verifyRequest(verifyResponse, (request) => request.post(path).send(data), expectedStatus);
   }
 
   function verifyRequest(

@@ -1,15 +1,15 @@
 import {
-    Request,
-    Query,
-    Path,
-    Header,
     Body,
     BodyProp,
     Get,
+    Header,
+    Path,
     Post,
+    Query,
+    Request,
     Route,
 } from '../../../src';
-import { ParameterTestModel, Gender } from '../testModel';
+import { Gender, ParameterTestModel } from '../testModel';
 
 @Route('ParameterTest')
 export class ParameterController {
@@ -34,14 +34,14 @@ export class ParameterController {
         @Query() weight: number,
         @Query() human: boolean,
         @Query() gender: Gender,
-        ): Promise<ParameterTestModel> {
+    ): Promise<ParameterTestModel> {
         return Promise.resolve<ParameterTestModel>({
-            firstname,
-            lastname,
             age,
-            weight,
-            human,
+            firstname,
             gender,
+            human,
+            lastname,
+            weight,
         });
     }
 
@@ -66,14 +66,14 @@ export class ParameterController {
         @Path() weight: number,
         @Path() human: boolean,
         @Path() gender: Gender,
-        ): Promise<ParameterTestModel> {
+    ): Promise<ParameterTestModel> {
         return Promise.resolve<ParameterTestModel>({
-            firstname,
-            lastname,
             age,
-            weight,
-            human,
+            firstname,
             gender,
+            human,
+            lastname,
+            weight,
         });
     }
 
@@ -98,14 +98,14 @@ export class ParameterController {
         @Header() weight: number,
         @Header() human: boolean,
         @Header() gender: Gender,
-        ): Promise<ParameterTestModel> {
+    ): Promise<ParameterTestModel> {
         return Promise.resolve<ParameterTestModel>({
-            firstname,
-            lastname,
             age,
-            weight,
-            human,
+            firstname,
             gender,
+            human,
+            lastname,
+            weight,
         });
     }
 
@@ -163,22 +163,65 @@ export class ParameterController {
         @BodyProp('human') human: boolean,
         @BodyProp('gender') gender: Gender): Promise<ParameterTestModel> {
         return Promise.resolve<ParameterTestModel>({
-            age: age,
-            firstname: firstname,
-            human: human,
-            lastname: lastname,
-            weight,
+            age,
+            firstname,
             gender,
+            human,
+            lastname,
+            weight,
         });
     }
 
     @Get('ParamaterQueyAnyType')
-    public async parameterAnyType(@Query() name: any): Promise<void> {
+    public async queryAnyType( @Query() name: any): Promise<void> {
         //
     }
 
     @Post('ParamaterBodyAnyType')
-    public async paramaterBodyAnyType(@Body() body: any): Promise<void> {
+    public async bodyAnyType( @Body() body: any): Promise<void> {
+        //
+    }
+
+    @Post('ParamaterQueyArray')
+    public async queyArray( @Query() name: string[]): Promise<void> {
+        //
+    }
+
+    @Get('ParamaterImplicitString')
+    public async implicitString( @Query() name = 'Iron man'): Promise<void> {
+        //
+    }
+
+    @Get('ParamaterImplicitNumber')
+    public async implicitNumber( @Query() age = 40): Promise<void> {
+        //
+    }
+
+    @Get('ParamaterImplicitEnum')
+    public async implicitEnum( @Query() gender = Gender.MALE): Promise<void> {
+        //
+    }
+
+    @Get('ParamaterImplicitStringArray')
+    public async implicitStringArray( @Query() arr = ['V1', 'V2']): Promise<void> {
+        //
+    }
+
+    @Get('paramaterImplicitNumberArray')
+    public async implicitNumberArray( @Query() arr = [1, 2, 3]): Promise<void> {
+        //
+    }
+
+    @Get('paramaterImplicitDateTime')
+    public async implicitDateTime( @Query() date = new Date('2017-01-01')): Promise<void> {
+        //
+    }
+
+    /**
+     * @isDate date
+     */
+    @Get('paramaterImplicitDate')
+    public async implicitDate( @Query() date = new Date(2018, 1, 15)): Promise<void> {
         //
     }
 }

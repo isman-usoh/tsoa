@@ -1,8 +1,6 @@
+import { expect } from 'chai';
 import 'mocha';
-import * as chai from 'chai';
 import * as templateHelpers from './../../../src/routeGeneration/templateHelpers';
-
-const expect = chai.expect;
 
 describe('templateHelpers', () => {
 

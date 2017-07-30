@@ -1,32 +1,33 @@
 import {
-  Example,
-  Request,
-  Query,
-  Get,
   Controller,
+  Example,
+  Get,
+  Query,
+  Request,
   Route,
   Tags,
 } from '../../../src';
 import {
-  GenericModel,
-  TestModel,
-  TestSubModel,
-  TestClassModel,
-} from './../testModel';
-import {
   ModelService,
 } from './../services/modelService';
+import {
+  GenericModel,
+  TestClassModel,
+  TestModel,
+  TestSubModel,
+} from './../testModel';
 
 @Route('GetTest')
 export class GetTestController extends Controller {
   /**
-  * This is a description of the getModel method
-  * this is some more text on another line
-  */
+   * This is a description of the getModel method
+   * this is some more text on another line
+   */
   @Get()
   @Example<TestModel>({
     boolArray: [true, false],
     boolValue: true,
+    dateValue: new Date(),
     id: 1,
     modelValue: {
       email: 'test@test.com',
@@ -65,19 +66,19 @@ export class GetTestController extends Controller {
   }
 
   /**
-  * @param numberPathParam This is a description for numberPathParam
-  * @param numberParam This is a description for numberParam
-  * @isDouble numberPathParam
-  * @minimum numberPathParam 1
-  * @maximum numberPathParam 10
-  *
-  * @minLength stringPathParam 1
-  * @maxLength stringPathParam 10
-  *
-  * @isString stringParam Custom error message
-  * @minLength stringParam 3
-  * @maxLength stringParam 10
-  */
+   * @param numberPathParam This is a description for numberPathParam
+   * @param numberParam This is a description for numberParam
+   * @isDouble numberPathParam
+   * @minimum numberPathParam 1
+   * @maximum numberPathParam 10
+   *
+   * @minLength stringPathParam 1
+   * @maxLength stringPathParam 10
+   *
+   * @isString stringParam Custom error message
+   * @minLength stringParam 3
+   * @maxLength stringParam 10
+   */
   @Get('{numberPathParam}/{booleanPathParam}/{stringPathParam}')
   public async getModelByParams(
     numberPathParam: number,
@@ -86,7 +87,7 @@ export class GetTestController extends Controller {
     @Query() booleanParam: boolean,
     @Query() stringParam: string,
     @Query() numberParam: number,
-    @Query() optionalStringParam?: string): Promise<TestModel> {
+    @Query() optionalStringParam = '') {
     const model = new ModelService().getModel();
     model.optionalString = optionalStringParam;
     model.numberValue = numberPathParam;
@@ -109,7 +110,7 @@ export class GetTestController extends Controller {
   }
 
   @Get('Request')
-  public async getRequest( @Request() request: Object): Promise<TestModel> {
+  public async getRequest( @Request() request: any): Promise<TestModel> {
     const model = new ModelService().getModel();
     // set the stringValue from the request context to test successful injection
     model.stringValue = (request as any).stringValue;

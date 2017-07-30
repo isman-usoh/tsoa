@@ -1,18 +1,18 @@
 /* tslint:disable */
 import { Controller, ValidateParam, FieldErrors, ValidateError, TsoaRoute } from '../../../src';
-import { PutTestController } from './../controllers/putController';
-import { PostTestController } from './../controllers/postController';
-import { PatchTestController } from './../controllers/patchController';
-import { GetTestController } from './../controllers/getController';
 import { DeleteTestController } from './../controllers/deleteController';
+import { GetTestController } from './../controllers/getController';
+import { PatchTestController } from './../controllers/patchController';
+import { PostTestController } from './../controllers/postController';
+import { PutTestController } from './../controllers/putController';
 import { MethodController } from './../controllers/methodController';
 import { ParameterController } from './../controllers/parameterController';
 import { SecurityTestController } from './../controllers/securityController';
-import { ValidateController } from './../controllers/validateController';
 import { TestController } from './../controllers/testController';
+import { ValidateController } from './../controllers/validateController';
 import { expressAuthentication } from './authentication';
 
-const models: TsoaRoute.Models = {
+const models: TsoaRoute.Models={
   "EnumIndexValue": {
     "enums": ["0", "1"],
   },
@@ -113,18 +113,14 @@ const models: TsoaRoute.Models = {
   },
   "TestClassModel": {
     "properties": {
+      "defaultValue2": { "dataType": "string", "default": "Default Value 2" },
       "publicStringProperty": { "dataType": "string", "required": true, "validators": { "minLength": { "value": 3 }, "maxLength": { "value": 20 }, "pattern": { "value": "^[a-zA-Z]+$" } } },
       "optionalPublicStringProperty": { "dataType": "string", "validators": { "minLength": { "value": 0 }, "maxLength": { "value": 10 } } },
       "stringProperty": { "dataType": "string", "required": true },
       "publicConstructorVar": { "dataType": "string", "required": true },
       "optionalPublicConstructorVar": { "dataType": "string" },
       "id": { "dataType": "double", "required": true },
-    },
-  },
-  "GenericRequestTestModel": {
-    "properties": {
-      "name": { "dataType": "string", "required": true },
-      "value": { "ref": "TestModel", "required": true },
+      "defaultValue1": { "dataType": "string", "default": "Default Value 1" },
     },
   },
   "Result": {
@@ -150,6 +146,12 @@ const models: TsoaRoute.Models = {
   "GenericModelstring[]": {
     "properties": {
       "result": { "dataType": "array", "array": { "dataType": "string" }, "required": true },
+    },
+  },
+  "GenericRequestTestModel": {
+    "properties": {
+      "name": { "dataType": "string", "required": true },
+      "value": { "ref": "TestModel", "required": true },
     },
   },
   "ErrorResponseModel": {
@@ -224,642 +226,45 @@ const models: TsoaRoute.Models = {
 };
 
 export function RegisterRoutes(app: any) {
-  app.put('/v1/PutTest',
-    function(request: any, response: any, next: any) {
-      const args = {
-        model: { "in": "body", "name": "model", "required": true, "ref": "TestModel" },
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new PutTestController();
-
-
-      const promise = controller.putModel.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.put('/v1/PutTest/Location',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new PutTestController();
-
-
-      const promise = controller.putModelAtLocation.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.put('/v1/PutTest/Multi',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new PutTestController();
-
-
-      const promise = controller.putWithMultiReturn.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.put('/v1/PutTest/WithId/:id',
-    function(request: any, response: any, next: any) {
-      const args = {
-        id: { "in": "path", "name": "id", "required": true, "dataType": "double" },
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new PutTestController();
-
-
-      const promise = controller.putWithId.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.post('/v1/PostTest',
-    function(request: any, response: any, next: any) {
-      const args = {
-        model: { "in": "body", "name": "model", "required": true, "ref": "TestModel" },
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new PostTestController();
-
-
-      const promise = controller.postModel.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.patch('/v1/PostTest',
-    function(request: any, response: any, next: any) {
-      const args = {
-        model: { "in": "body", "name": "model", "required": true, "ref": "TestModel" },
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new PostTestController();
-
-
-      const promise = controller.updateModel.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.post('/v1/PostTest/WithClassModel',
-    function(request: any, response: any, next: any) {
-      const args = {
-        model: { "in": "body", "name": "model", "required": true, "ref": "TestClassModel" },
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new PostTestController();
-
-
-      const promise = controller.postClassModel.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.post('/v1/PostTest/Location',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new PostTestController();
-
-
-      const promise = controller.postModelAtLocation.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.post('/v1/PostTest/Multi',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new PostTestController();
-
-
-      const promise = controller.postWithMultiReturn.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.post('/v1/PostTest/WithId/:id',
-    function(request: any, response: any, next: any) {
-      const args = {
-        id: { "in": "path", "name": "id", "required": true, "dataType": "double" },
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new PostTestController();
-
-
-      const promise = controller.postWithId.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.post('/v1/PostTest/WithBodyAndQueryParams',
-    function(request: any, response: any, next: any) {
-      const args = {
-        model: { "in": "body", "name": "model", "required": true, "ref": "TestModel" },
-        query: { "in": "query", "name": "query", "required": true, "dataType": "string" },
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new PostTestController();
-
-
-      const promise = controller.postWithBodyAndQueryParams.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.post('/v1/PostTest/GenericBody',
-    function(request: any, response: any, next: any) {
-      const args = {
-        genericReq: { "in": "body", "name": "genericReq", "required": true, "ref": "GenericRequestTestModel" },
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new PostTestController();
-
-
-      const promise = controller.getGenericRequest.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.patch('/v1/PatchTest',
-    function(request: any, response: any, next: any) {
-      const args = {
-        model: { "in": "body", "name": "model", "required": true, "ref": "TestModel" },
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new PatchTestController();
-
-
-      const promise = controller.patchModel.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.patch('/v1/PatchTest/Location',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new PatchTestController();
-
-
-      const promise = controller.patchModelAtLocation.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.patch('/v1/PatchTest/Multi',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new PatchTestController();
-
-
-      const promise = controller.patchWithMultiReturn.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.patch('/v1/PatchTest/WithId/:id',
-    function(request: any, response: any, next: any) {
-      const args = {
-        id: { "in": "path", "name": "id", "required": true, "dataType": "double" },
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new PatchTestController();
-
-
-      const promise = controller.patchWithId.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.get('/v1/GetTest',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new GetTestController();
-
-
-      const promise = controller.getModel.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.get('/v1/GetTest/Current',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new GetTestController();
-
-
-      const promise = controller.getCurrentModel.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.get('/v1/GetTest/ClassModel',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new GetTestController();
-
-
-      const promise = controller.getClassModel.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.get('/v1/GetTest/Multi',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new GetTestController();
-
-
-      const promise = controller.getMultipleModels.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.get('/v1/GetTest/:numberPathParam/:booleanPathParam/:stringPathParam',
-    function(request: any, response: any, next: any) {
-      const args = {
-        numberPathParam: { "in": "path", "name": "numberPathParam", "required": true, "dataType": "double", "validators": { "isDouble": { "errorMsg": "numberPathParam" }, "minimum": { "value": 1 }, "maximum": { "value": 10 } } },
-        stringPathParam: { "in": "path", "name": "stringPathParam", "required": true, "dataType": "string", "validators": { "minLength": { "value": 1 }, "maxLength": { "value": 10 } } },
-        booleanPathParam: { "in": "path", "name": "booleanPathParam", "required": true, "dataType": "boolean" },
-        booleanParam: { "in": "query", "name": "booleanParam", "required": true, "dataType": "boolean" },
-        stringParam: { "in": "query", "name": "stringParam", "required": true, "dataType": "string", "validators": { "isString": { "errorMsg": "Custom error message" }, "minLength": { "value": 3 }, "maxLength": { "value": 10 } } },
-        numberParam: { "in": "query", "name": "numberParam", "required": true, "dataType": "double" },
-        optionalStringParam: { "in": "query", "name": "optionalStringParam", "dataType": "string" },
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new GetTestController();
-
-
-      const promise = controller.getModelByParams.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.get('/v1/GetTest/ResponseWithUnionTypeProperty',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new GetTestController();
-
-
-      const promise = controller.getResponseWithUnionTypeProperty.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.get('/v1/GetTest/UnionTypeResponse',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new GetTestController();
-
-
-      const promise = controller.getUnionTypeResponse.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.get('/v1/GetTest/Request',
-    function(request: any, response: any, next: any) {
-      const args = {
-        request: { "in": "request", "name": "request", "required": true, "dataType": "object" },
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new GetTestController();
-
-
-      const promise = controller.getRequest.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.get('/v1/GetTest/DateParam',
-    function(request: any, response: any, next: any) {
-      const args = {
-        date: { "in": "query", "name": "date", "required": true, "dataType": "datetime" },
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new GetTestController();
-
-
-      const promise = controller.getByDataParam.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.get('/v1/GetTest/ThrowsError',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new GetTestController();
-
-
-      const promise = controller.getThrowsError.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.get('/v1/GetTest/GeneratesTags',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new GetTestController();
-
-
-      const promise = controller.getGeneratesTags.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.get('/v1/GetTest/HandleBufferType',
-    function(request: any, response: any, next: any) {
-      const args = {
-        buffer: { "in": "query", "name": "buffer", "required": true, "dataType": "buffer" },
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new GetTestController();
-
-
-      const promise = controller.getBuffer.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.get('/v1/GetTest/GenericModel',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new GetTestController();
-
-
-      const promise = controller.getGenericModel.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.get('/v1/GetTest/GenericModelArray',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new GetTestController();
-
-
-      const promise = controller.getGenericModelArray.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.get('/v1/GetTest/GenericPrimitive',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new GetTestController();
-
-
-      const promise = controller.getGenericPrimitive.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.get('/v1/GetTest/GenericPrimitiveArray',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new GetTestController();
-
-
-      const promise = controller.getGenericPrimitiveArray.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
   app.delete('/v1/DeleteTest',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new DeleteTestController();
+      const controller=new DeleteTestController();
 
 
-      const promise = controller.deleteWithReturnValue.apply(controller, validatedArgs);
+      const promise=controller.deleteWithReturnValue.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.delete('/v1/DeleteTest/Current',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new DeleteTestController();
+      const controller=new DeleteTestController();
 
 
-      const promise = controller.deleteCurrent.apply(controller, validatedArgs);
+      const promise=controller.deleteCurrent.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.delete('/v1/DeleteTest/:numberPathParam/:booleanPathParam/:stringPathParam',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
         numberPathParam: { "in": "path", "name": "numberPathParam", "required": true, "dataType": "double" },
         stringPathParam: { "in": "path", "name": "stringPathParam", "required": true, "dataType": "string" },
         booleanPathParam: { "in": "path", "name": "booleanPathParam", "required": true, "dataType": "boolean" },
@@ -868,199 +273,796 @@ export function RegisterRoutes(app: any) {
         numberParam: { "in": "query", "name": "numberParam", "required": true, "dataType": "double" },
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new DeleteTestController();
+      const controller=new DeleteTestController();
 
 
-      const promise = controller.getModelByParams.apply(controller, validatedArgs);
+      const promise=controller.getModelByParams.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/GetTest',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new GetTestController();
+
+
+      const promise=controller.getModel.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/GetTest/Current',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new GetTestController();
+
+
+      const promise=controller.getCurrentModel.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/GetTest/ClassModel',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new GetTestController();
+
+
+      const promise=controller.getClassModel.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/GetTest/Multi',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new GetTestController();
+
+
+      const promise=controller.getMultipleModels.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/GetTest/:numberPathParam/:booleanPathParam/:stringPathParam',
+    function(request: any, response: any, next: any) {
+      const args={
+        numberPathParam: { "in": "path", "name": "numberPathParam", "required": true, "dataType": "double", "validators": { "isDouble": { "errorMsg": "numberPathParam" }, "minimum": { "value": 1 }, "maximum": { "value": 10 } } },
+        stringPathParam: { "in": "path", "name": "stringPathParam", "required": true, "dataType": "string", "validators": { "minLength": { "value": 1 }, "maxLength": { "value": 10 } } },
+        booleanPathParam: { "in": "path", "name": "booleanPathParam", "required": true, "dataType": "boolean" },
+        booleanParam: { "in": "query", "name": "booleanParam", "required": true, "dataType": "boolean" },
+        stringParam: { "in": "query", "name": "stringParam", "required": true, "dataType": "string", "validators": { "isString": { "errorMsg": "Custom error message" }, "minLength": { "value": 3 }, "maxLength": { "value": 10 } } },
+        numberParam: { "in": "query", "name": "numberParam", "required": true, "dataType": "double" },
+        optionalStringParam: { "default": "", "in": "query", "name": "optionalStringParam", "dataType": "string" },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new GetTestController();
+
+
+      const promise=controller.getModelByParams.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/GetTest/ResponseWithUnionTypeProperty',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new GetTestController();
+
+
+      const promise=controller.getResponseWithUnionTypeProperty.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/GetTest/UnionTypeResponse',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new GetTestController();
+
+
+      const promise=controller.getUnionTypeResponse.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/GetTest/Request',
+    function(request: any, response: any, next: any) {
+      const args={
+        request: { "in": "request", "name": "request", "required": true, "dataType": "object" },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new GetTestController();
+
+
+      const promise=controller.getRequest.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/GetTest/DateParam',
+    function(request: any, response: any, next: any) {
+      const args={
+        date: { "in": "query", "name": "date", "required": true, "dataType": "datetime" },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new GetTestController();
+
+
+      const promise=controller.getByDataParam.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/GetTest/ThrowsError',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new GetTestController();
+
+
+      const promise=controller.getThrowsError.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/GetTest/GeneratesTags',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new GetTestController();
+
+
+      const promise=controller.getGeneratesTags.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/GetTest/HandleBufferType',
+    function(request: any, response: any, next: any) {
+      const args={
+        buffer: { "in": "query", "name": "buffer", "required": true, "dataType": "buffer" },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new GetTestController();
+
+
+      const promise=controller.getBuffer.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/GetTest/GenericModel',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new GetTestController();
+
+
+      const promise=controller.getGenericModel.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/GetTest/GenericModelArray',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new GetTestController();
+
+
+      const promise=controller.getGenericModelArray.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/GetTest/GenericPrimitive',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new GetTestController();
+
+
+      const promise=controller.getGenericPrimitive.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/GetTest/GenericPrimitiveArray',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new GetTestController();
+
+
+      const promise=controller.getGenericPrimitiveArray.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.patch('/v1/PatchTest',
+    function(request: any, response: any, next: any) {
+      const args={
+        model: { "in": "body", "name": "model", "required": true, "ref": "TestModel" },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new PatchTestController();
+
+
+      const promise=controller.patchModel.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.patch('/v1/PatchTest/Location',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new PatchTestController();
+
+
+      const promise=controller.patchModelAtLocation.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.patch('/v1/PatchTest/Multi',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new PatchTestController();
+
+
+      const promise=controller.patchWithMultiReturn.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.patch('/v1/PatchTest/WithId/:id',
+    function(request: any, response: any, next: any) {
+      const args={
+        id: { "in": "path", "name": "id", "required": true, "dataType": "double" },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new PatchTestController();
+
+
+      const promise=controller.patchWithId.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.post('/v1/PostTest',
+    function(request: any, response: any, next: any) {
+      const args={
+        model: { "in": "body", "name": "model", "required": true, "ref": "TestModel" },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new PostTestController();
+
+
+      const promise=controller.postModel.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.patch('/v1/PostTest',
+    function(request: any, response: any, next: any) {
+      const args={
+        model: { "in": "body", "name": "model", "required": true, "ref": "TestModel" },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new PostTestController();
+
+
+      const promise=controller.updateModel.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.post('/v1/PostTest/WithClassModel',
+    function(request: any, response: any, next: any) {
+      const args={
+        model: { "in": "body", "name": "model", "required": true, "ref": "TestClassModel" },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new PostTestController();
+
+
+      const promise=controller.postClassModel.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.post('/v1/PostTest/Location',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new PostTestController();
+
+
+      const promise=controller.postModelAtLocation.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.post('/v1/PostTest/Multi',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new PostTestController();
+
+
+      const promise=controller.postWithMultiReturn.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.post('/v1/PostTest/WithId/:id',
+    function(request: any, response: any, next: any) {
+      const args={
+        id: { "in": "path", "name": "id", "required": true, "dataType": "double" },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new PostTestController();
+
+
+      const promise=controller.postWithId.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.post('/v1/PostTest/WithBodyAndQueryParams',
+    function(request: any, response: any, next: any) {
+      const args={
+        model: { "in": "body", "name": "model", "required": true, "ref": "TestModel" },
+        query: { "in": "query", "name": "query", "required": true, "dataType": "string" },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new PostTestController();
+
+
+      const promise=controller.postWithBodyAndQueryParams.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.post('/v1/PostTest/GenericBody',
+    function(request: any, response: any, next: any) {
+      const args={
+        genericReq: { "in": "body", "name": "genericReq", "required": true, "ref": "GenericRequestTestModel" },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new PostTestController();
+
+
+      const promise=controller.getGenericRequest.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.put('/v1/PutTest',
+    function(request: any, response: any, next: any) {
+      const args={
+        model: { "in": "body", "name": "model", "required": true, "ref": "TestModel" },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new PutTestController();
+
+
+      const promise=controller.putModel.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.put('/v1/PutTest/Location',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new PutTestController();
+
+
+      const promise=controller.putModelAtLocation.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.put('/v1/PutTest/Multi',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new PutTestController();
+
+
+      const promise=controller.putWithMultiReturn.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.put('/v1/PutTest/WithId/:id',
+    function(request: any, response: any, next: any) {
+      const args={
+        id: { "in": "path", "name": "id", "required": true, "dataType": "double" },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new PutTestController();
+
+
+      const promise=controller.putWithId.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/MethodTest/Get',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new MethodController();
+      const controller=new MethodController();
 
 
-      const promise = controller.getMethod.apply(controller, validatedArgs);
+      const promise=controller.getMethod.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.post('/v1/MethodTest/Post',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new MethodController();
+      const controller=new MethodController();
 
 
-      const promise = controller.postMethod.apply(controller, validatedArgs);
+      const promise=controller.postMethod.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.patch('/v1/MethodTest/Patch',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new MethodController();
+      const controller=new MethodController();
 
 
-      const promise = controller.patchMethod.apply(controller, validatedArgs);
+      const promise=controller.patchMethod.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.put('/v1/MethodTest/Put',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new MethodController();
+      const controller=new MethodController();
 
 
-      const promise = controller.putMethod.apply(controller, validatedArgs);
+      const promise=controller.putMethod.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.delete('/v1/MethodTest/Delete',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new MethodController();
+      const controller=new MethodController();
 
 
-      const promise = controller.deleteMethod.apply(controller, validatedArgs);
+      const promise=controller.deleteMethod.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/MethodTest/Description',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new MethodController();
+      const controller=new MethodController();
 
 
-      const promise = controller.description.apply(controller, validatedArgs);
+      const promise=controller.description.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/MethodTest/Tags',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new MethodController();
+      const controller=new MethodController();
 
 
-      const promise = controller.tags.apply(controller, validatedArgs);
+      const promise=controller.tags.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/MethodTest/MultiResponse',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new MethodController();
+      const controller=new MethodController();
 
 
-      const promise = controller.multiResponse.apply(controller, validatedArgs);
+      const promise=controller.multiResponse.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/MethodTest/SuccessResponse',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new MethodController();
+      const controller=new MethodController();
 
 
-      const promise = controller.successResponse.apply(controller, validatedArgs);
+      const promise=controller.successResponse.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/MethodTest/ApiSecurity',
     authenticateMiddleware('api_key'
     ),
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new MethodController();
+      const controller=new MethodController();
 
 
-      const promise = controller.apiSecurity.apply(controller, validatedArgs);
+      const promise=controller.apiSecurity.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/MethodTest/OauthSecurity',
@@ -1068,79 +1070,79 @@ export function RegisterRoutes(app: any) {
       , ["write:pets", "read:pets"]
     ),
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new MethodController();
+      const controller=new MethodController();
 
 
-      const promise = controller.oauthSecurity.apply(controller, validatedArgs);
+      const promise=controller.oauthSecurity.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/MethodTest/DeprecatedMethod',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new MethodController();
+      const controller=new MethodController();
 
 
-      const promise = controller.deprecatedMethod.apply(controller, validatedArgs);
+      const promise=controller.deprecatedMethod.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/MethodTest/SummaryMethod',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new MethodController();
+      const controller=new MethodController();
 
 
-      const promise = controller.summaryMethod.apply(controller, validatedArgs);
+      const promise=controller.summaryMethod.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/MethodTest/returnAnyType',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new MethodController();
+      const controller=new MethodController();
 
 
-      const promise = controller.returnAnyType.apply(controller, validatedArgs);
+      const promise=controller.returnAnyType.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/ParameterTest/Query',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
         firstname: { "in": "query", "name": "firstname", "required": true, "dataType": "string" },
         lastname: { "in": "query", "name": "last_name", "required": true, "dataType": "string" },
         age: { "in": "query", "name": "age", "required": true, "dataType": "integer", "validators": { "isInt": { "errorMsg": "age" } } },
@@ -1149,22 +1151,22 @@ export function RegisterRoutes(app: any) {
         gender: { "in": "query", "name": "gender", "required": true, "dataType": "enum", "enums": ["MALE", "FEMALE"] },
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new ParameterController();
+      const controller=new ParameterController();
 
 
-      const promise = controller.getQuery.apply(controller, validatedArgs);
+      const promise=controller.getQuery.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/ParameterTest/Path/:firstname/:last_name/:age/:weight/:human/:gender',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
         firstname: { "in": "path", "name": "firstname", "required": true, "dataType": "string" },
         lastname: { "in": "path", "name": "last_name", "required": true, "dataType": "string" },
         age: { "in": "path", "name": "age", "required": true, "dataType": "integer", "validators": { "isInt": { "errorMsg": "age" } } },
@@ -1173,22 +1175,22 @@ export function RegisterRoutes(app: any) {
         gender: { "in": "path", "name": "gender", "required": true, "dataType": "enum", "enums": ["MALE", "FEMALE"] },
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new ParameterController();
+      const controller=new ParameterController();
 
 
-      const promise = controller.getPath.apply(controller, validatedArgs);
+      const promise=controller.getPath.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/ParameterTest/Header',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
         firstname: { "in": "header", "name": "firstname", "required": true, "dataType": "string" },
         lastname: { "in": "header", "name": "last_name", "required": true, "dataType": "string" },
         age: { "in": "header", "name": "age", "required": true, "dataType": "integer", "validators": { "isInt": { "errorMsg": "age" } } },
@@ -1197,60 +1199,60 @@ export function RegisterRoutes(app: any) {
         gender: { "in": "header", "name": "gender", "required": true, "dataType": "enum", "enums": ["MALE", "FEMALE"] },
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new ParameterController();
+      const controller=new ParameterController();
 
 
-      const promise = controller.getHeader.apply(controller, validatedArgs);
+      const promise=controller.getHeader.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/ParameterTest/Request',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
         request: { "in": "request", "name": "request", "required": true, "dataType": "object" },
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new ParameterController();
+      const controller=new ParameterController();
 
 
-      const promise = controller.getRequest.apply(controller, validatedArgs);
+      const promise=controller.getRequest.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.post('/v1/ParameterTest/Body',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
         body: { "in": "body", "name": "body", "required": true, "ref": "ParameterTestModel" },
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new ParameterController();
+      const controller=new ParameterController();
 
 
-      const promise = controller.getBody.apply(controller, validatedArgs);
+      const promise=controller.getBody.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.post('/v1/ParameterTest/BodyProps',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
         firstname: { "in": "body-prop", "name": "firstname", "required": true, "dataType": "string" },
         lastname: { "in": "body-prop", "name": "lastname", "required": true, "dataType": "string" },
         age: { "in": "body-prop", "name": "age", "required": true, "dataType": "integer", "validators": { "isInt": { "errorMsg": "age" } } },
@@ -1259,97 +1261,249 @@ export function RegisterRoutes(app: any) {
         gender: { "in": "body-prop", "name": "gender", "required": true, "ref": "Gender" },
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new ParameterController();
+      const controller=new ParameterController();
 
 
-      const promise = controller.getBodyProps.apply(controller, validatedArgs);
+      const promise=controller.getBodyProps.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/ParameterTest/ParamaterQueyAnyType',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
         name: { "in": "query", "name": "name", "required": true, "dataType": "any" },
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new ParameterController();
+      const controller=new ParameterController();
 
 
-      const promise = controller.parameterAnyType.apply(controller, validatedArgs);
+      const promise=controller.queryAnyType.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.post('/v1/ParameterTest/ParamaterBodyAnyType',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
         body: { "in": "body", "name": "body", "required": true, "dataType": "any" },
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new ParameterController();
+      const controller=new ParameterController();
 
 
-      const promise = controller.paramaterBodyAnyType.apply(controller, validatedArgs);
+      const promise=controller.bodyAnyType.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.post('/v1/ParameterTest/ParamaterQueyArray',
+    function(request: any, response: any, next: any) {
+      const args={
+        name: { "in": "query", "name": "name", "required": true, "dataType": "array", "array": { "dataType": "string" } },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new ParameterController();
+
+
+      const promise=controller.queyArray.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/ParameterTest/ParamaterImplicitString',
+    function(request: any, response: any, next: any) {
+      const args={
+        name: { "default": "Iron man", "in": "query", "name": "name", "dataType": "string" },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new ParameterController();
+
+
+      const promise=controller.implicitString.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/ParameterTest/ParamaterImplicitNumber',
+    function(request: any, response: any, next: any) {
+      const args={
+        age: { "default": 40, "in": "query", "name": "age", "dataType": "double" },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new ParameterController();
+
+
+      const promise=controller.implicitNumber.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/ParameterTest/ParamaterImplicitEnum',
+    function(request: any, response: any, next: any) {
+      const args={
+        gender: { "in": "query", "name": "gender", "dataType": "enum", "enums": ["MALE", "FEMALE"] },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new ParameterController();
+
+
+      const promise=controller.implicitEnum.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/ParameterTest/ParamaterImplicitStringArray',
+    function(request: any, response: any, next: any) {
+      const args={
+        arr: { "default": ["V1", "V2"], "in": "query", "name": "arr", "dataType": "array", "array": { "dataType": "string" } },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new ParameterController();
+
+
+      const promise=controller.implicitStringArray.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/ParameterTest/paramaterImplicitNumberArray',
+    function(request: any, response: any, next: any) {
+      const args={
+        arr: { "default": [1, 2, 3], "in": "query", "name": "arr", "dataType": "array", "array": { "dataType": "double" } },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new ParameterController();
+
+
+      const promise=controller.implicitNumberArray.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/ParameterTest/paramaterImplicitDateTime',
+    function(request: any, response: any, next: any) {
+      const args={
+        date: { "default": "2017-01-01T00:00:00.000Z", "in": "query", "name": "date", "dataType": "datetime" },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new ParameterController();
+
+
+      const promise=controller.implicitDateTime.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/ParameterTest/paramaterImplicitDate',
+    function(request: any, response: any, next: any) {
+      const args={
+        date: { "default": "2018-01-15", "in": "query", "name": "date", "dataType": "date", "validators": { "isDate": { "errorMsg": "date" } } },
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new ParameterController();
+
+
+      const promise=controller.implicitDate.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/SecurityTest',
     authenticateMiddleware('api_key'
     ),
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
         request: { "in": "request", "name": "request", "required": true, "dataType": "object" },
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new SecurityTestController();
+      const controller=new SecurityTestController();
 
 
-      const promise = controller.GetWithApi.apply(controller, validatedArgs);
+      const promise=controller.GetWithApi.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/SecurityTest/Koa',
     authenticateMiddleware('api_key'
     ),
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
         request: { "in": "request", "name": "request", "required": true, "dataType": "object" },
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new SecurityTestController();
+      const controller=new SecurityTestController();
 
 
-      const promise = controller.GetWithApiForKoa.apply(controller, validatedArgs);
+      const promise=controller.GetWithApiForKoa.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/SecurityTest/Oauth',
@@ -1357,277 +1511,277 @@ export function RegisterRoutes(app: any) {
       , ["write:pets", "read:pets"]
     ),
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
         request: { "in": "request", "name": "request", "required": true, "dataType": "object" },
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new SecurityTestController();
+      const controller=new SecurityTestController();
 
 
-      const promise = controller.GetWithSecurity.apply(controller, validatedArgs);
+      const promise=controller.GetWithSecurity.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/Controller/normalStatusCode',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new TestController();
+
+
+      const promise=controller.normalStatusCode.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/Controller/noContentStatusCode',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new TestController();
+
+
+      const promise=controller.noContentStatusCode.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/Controller/customStatusCode',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new TestController();
+
+
+      const promise=controller.customNomalStatusCode.apply(controller, validatedArgs);
+      promiseHandler(controller, promise, response, next);
+    });
+  app.get('/v1/Controller/customHeader',
+    function(request: any, response: any, next: any) {
+      const args={
+      };
+
+      let validatedArgs: any[]=[];
+      try {
+        validatedArgs=getValidatedArgs(args, request);
+      } catch (err) {
+        return next(err);
+      }
+
+      const controller=new TestController();
+
+
+      const promise=controller.customHeader.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/Validate/parameter/date',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
         minDateValue: { "in": "query", "name": "minDateValue", "required": true, "dataType": "date", "validators": { "isDate": { "errorMsg": "minDateValue" }, "minDate": { "value": "2018-01-01" } } },
         maxDateValue: { "in": "query", "name": "maxDateValue", "required": true, "dataType": "date", "validators": { "isDate": { "errorMsg": "maxDateValue" }, "maxDate": { "value": "2016-01-01" } } },
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new ValidateController();
+      const controller=new ValidateController();
 
 
-      const promise = controller.dateValidate.apply(controller, validatedArgs);
+      const promise=controller.dateValidate.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/Validate/parameter/datetime',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
         minDateValue: { "in": "query", "name": "minDateValue", "required": true, "dataType": "datetime", "validators": { "isDateTime": { "errorMsg": "minDateValue" }, "minDate": { "value": "2018-01-01T00:00:00" } } },
         maxDateValue: { "in": "query", "name": "maxDateValue", "required": true, "dataType": "datetime", "validators": { "isDateTime": { "errorMsg": "maxDateValue" }, "maxDate": { "value": "2016-01-01T00:00:00" } } },
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new ValidateController();
+      const controller=new ValidateController();
 
 
-      const promise = controller.dateTimeValidate.apply(controller, validatedArgs);
+      const promise=controller.dateTimeValidate.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/Validate/parameter/integer',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
         minValue: { "in": "query", "name": "minValue", "required": true, "dataType": "integer", "validators": { "isInt": { "errorMsg": "minValue" }, "minimum": { "value": 5 } } },
         maxValue: { "in": "query", "name": "maxValue", "required": true, "dataType": "integer", "validators": { "isInt": { "errorMsg": "maxValue" }, "maximum": { "value": 3 } } },
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new ValidateController();
+      const controller=new ValidateController();
 
 
-      const promise = controller.longValidate.apply(controller, validatedArgs);
+      const promise=controller.longValidate.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/Validate/parameter/float',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
         minValue: { "in": "query", "name": "minValue", "required": true, "dataType": "float", "validators": { "isFloat": { "errorMsg": "minValue" }, "minimum": { "value": 5.5 } } },
         maxValue: { "in": "query", "name": "maxValue", "required": true, "dataType": "float", "validators": { "isFloat": { "errorMsg": "maxValue" }, "maximum": { "value": 3.5 } } },
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new ValidateController();
+      const controller=new ValidateController();
 
 
-      const promise = controller.doubleValidate.apply(controller, validatedArgs);
+      const promise=controller.doubleValidate.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/Validate/parameter/boolean',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
         boolValue: { "in": "query", "name": "boolValue", "required": true, "dataType": "boolean", "validators": { "isBoolean": { "errorMsg": "boolValue" } } },
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new ValidateController();
+      const controller=new ValidateController();
 
 
-      const promise = controller.booleanValidate.apply(controller, validatedArgs);
+      const promise=controller.booleanValidate.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/Validate/parameter/string',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
         minLength: { "in": "query", "name": "minLength", "required": true, "dataType": "string", "validators": { "minLength": { "value": 5 } } },
         maxLength: { "in": "query", "name": "maxLength", "required": true, "dataType": "string", "validators": { "maxLength": { "value": 3 } } },
         patternValue: { "in": "query", "name": "patternValue", "required": true, "dataType": "string", "validators": { "pattern": { "value": "^[a-zA-Z]+$" } } },
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new ValidateController();
+      const controller=new ValidateController();
 
 
-      const promise = controller.stringValidate.apply(controller, validatedArgs);
+      const promise=controller.stringValidate.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/Validate/parameter/customRequiredErrorMsg',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
         longValue: { "in": "query", "name": "longValue", "required": true, "dataType": "long", "validators": { "isLong": { "errorMsg": "Required long number." } } },
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new ValidateController();
+      const controller=new ValidateController();
 
 
-      const promise = controller.customRequiredErrorMsg.apply(controller, validatedArgs);
+      const promise=controller.customRequiredErrorMsg.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.get('/v1/Validate/parameter/customInvalidErrorMsg',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
         longValue: { "in": "query", "name": "longValue", "required": true, "dataType": "long", "validators": { "isLong": { "errorMsg": "Invalid long number." } } },
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new ValidateController();
+      const controller=new ValidateController();
 
 
-      const promise = controller.customInvalidErrorMsg.apply(controller, validatedArgs);
+      const promise=controller.customInvalidErrorMsg.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
   app.post('/v1/Validate/body',
     function(request: any, response: any, next: any) {
-      const args = {
+      const args={
         body: { "in": "body", "name": "body", "required": true, "ref": "ValidateModel" },
       };
 
-      let validatedArgs: any[] = [];
+      let validatedArgs: any[]=[];
       try {
-        validatedArgs = getValidatedArgs(args, request);
+        validatedArgs=getValidatedArgs(args, request);
       } catch (err) {
         return next(err);
       }
 
-      const controller = new ValidateController();
+      const controller=new ValidateController();
 
 
-      const promise = controller.bodyValidate.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.get('/v1/Controller/normalStatusCode',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new TestController();
-
-
-      const promise = controller.normalStatusCode.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.get('/v1/Controller/noContentStatusCode',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new TestController();
-
-
-      const promise = controller.noContentStatusCode.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.get('/v1/Controller/customStatusCode',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new TestController();
-
-
-      const promise = controller.customNomalStatusCode.apply(controller, validatedArgs);
-      promiseHandler(controller, promise, response, next);
-    });
-  app.get('/v1/Controller/customHeader',
-    function(request: any, response: any, next: any) {
-      const args = {
-      };
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request);
-      } catch (err) {
-        return next(err);
-      }
-
-      const controller = new TestController();
-
-
-      const promise = controller.customHeader.apply(controller, validatedArgs);
+      const promise=controller.bodyValidate.apply(controller, validatedArgs);
       promiseHandler(controller, promise, response, next);
     });
 
-  function authenticateMiddleware(name: string, scopes: string[] = []) {
+  function authenticateMiddleware(name: string, scopes: string[]=[]) {
     return (request: any, response: any, next: any) => {
-      expressAuthentication(request, name, scopes).then((user: any) => {
-        request['user'] = user;
+      return expressAuthentication(request, name, scopes).then((user: any) => {
+        request['user']=user;
         next();
       })
         .catch((error: any) => {
@@ -1642,28 +1796,28 @@ export function RegisterRoutes(app: any) {
       .then((data: any) => {
         let statusCode;
         if (controllerObj instanceof Controller) {
-          const controller = controllerObj as Controller
-          const headers = controller.getHeaders();
+          const controller=controllerObj as Controller
+          const headers=controller.getHeaders();
           Object.keys(headers).forEach((name: string) => {
             response.set(name, headers[name]);
           });
 
-          statusCode = controller.getStatus();
+          statusCode=controller.getStatus();
         }
 
         if (data) {
-          response.status(statusCode | 200).json(data);
+          response.status(statusCode|200).json(data);
         } else {
-          response.status(statusCode | 204).end();
+          response.status(statusCode|204).end();
         }
       })
       .catch((error: any) => next(error));
   }
 
   function getValidatedArgs(args: any, request: any): any[] {
-    const fieldErrors: FieldErrors = {};
-    const values = Object.keys(args).map((key) => {
-      const name = args[key].name;
+    const fieldErrors: FieldErrors={};
+    const values=Object.keys(args).map((key) => {
+      const name=args[key].name;
       switch (args[key].in) {
         case 'request':
           return request;
@@ -1674,12 +1828,12 @@ export function RegisterRoutes(app: any) {
         case 'header':
           return ValidateParam(args[key], request.header(name), models, name, fieldErrors);
         case 'body':
-          return ValidateParam(args[key], request.body, models, name, fieldErrors, name + '.');
+          return ValidateParam(args[key], request.body, models, name, fieldErrors, name+'.');
         case 'body-prop':
           return ValidateParam(args[key], request.body[name], models, name, fieldErrors, 'body.');
       }
     });
-    if (Object.keys(fieldErrors).length > 0) {
+    if (Object.keys(fieldErrors).length>0) {
       throw new ValidateError(fieldErrors, '');
     }
     return values;

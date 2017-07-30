@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
-import { Tsoa } from './tsoa';
 import { ControllerGenerator } from './controllerGenerator';
+import { Tsoa } from './tsoa';
 
 export class MetadataGenerator {
   public static current: MetadataGenerator;
@@ -19,15 +19,15 @@ export class MetadataGenerator {
   }
 
   public Generate(): Tsoa.Metadata {
-    this.program.getSourceFiles().forEach(sf => {
-      ts.forEachChild(sf, node => {
+    this.program.getSourceFiles().forEach((sf) => {
+      ts.forEachChild(sf, (node) => {
         this.nodes.push(node);
       });
     });
 
     const controllers = this.buildControllers();
 
-    this.circularDependencyResolvers.forEach(c => c(this.referenceTypeMap));
+    this.circularDependencyResolvers.forEach((c) => c(this.referenceTypeMap));
 
     return {
       controllers,
@@ -56,9 +56,9 @@ export class MetadataGenerator {
 
   private buildControllers() {
     return this.nodes
-      .filter(node => node.kind === ts.SyntaxKind.ClassDeclaration && this.IsExportedNode(node as ts.ClassDeclaration))
+      .filter((node) => node.kind === ts.SyntaxKind.ClassDeclaration && this.IsExportedNode(node as ts.ClassDeclaration))
       .map((classDeclaration: ts.ClassDeclaration) => new ControllerGenerator(classDeclaration))
-      .filter(generator => generator.IsValid())
-      .map(generator => generator.Generate());
+      .filter((generator) => generator.IsValid())
+      .map((generator) => generator.Generate());
   }
 }

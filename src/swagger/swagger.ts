@@ -153,7 +153,7 @@ export namespace Swagger {
     $ref?: string;
     title?: string;
     description?: string;
-    default?: string | boolean | number | Object;
+    default?: string | boolean | number | any;
     multipleOf?: number;
     maximum?: number;
     exclusiveMaximum?: number;

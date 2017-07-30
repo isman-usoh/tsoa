@@ -1,4 +1,4 @@
-import { TestModel, TestSubModel, TestClassModel } from '../testModel';
+import { TestClassModel, TestModel, TestSubModel } from '../testModel';
 
 export class ModelService {
   public getModel(): TestModel {
