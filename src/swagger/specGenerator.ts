@@ -77,7 +77,8 @@ export class SpecGenerator {
     const paths: { [pathName: string]: Swagger.Path } = {};
 
     this.metadata.controllers.forEach(controller => {
-      controller.methods.forEach(method => {
+      // construct documentation using all methods except @Hidden
+      controller.methods.filter(method => !method.isHidden).forEach(method => {
         const path = `${controller.path ? `/${controller.path}` : ''}${method.path}`;
         paths[path] = paths[path] || {};
         this.buildMethod(controller.name, method, paths[path]);
@@ -91,17 +92,21 @@ export class SpecGenerator {
     const pathMethod: Swagger.Operation = pathObject[method.method] = this.buildOperation(controllerName, method);
     pathMethod.description = method.description;
     pathMethod.summary = method.summary;
+    pathMethod.tags = method.tags;
 
     if (method.deprecated) {
       pathMethod.deprecated = method.deprecated;
     }
-    if (method.tags.length) {
-      pathMethod.tags = method.tags;
-    }
     if (method.security) {
-      const security: any = {};
-      security[method.security.name] = method.security.scopes ? method.security.scopes : [];
-      pathMethod.security = [security];
+
+      const methodSecurity: any[] = [];
+      for (const thisSecurity of method.security) {
+        const security: any = {};
+        security[thisSecurity.name] = thisSecurity.scopes ? thisSecurity.scopes : [];
+        methodSecurity.push(security);
+      }
+
+      pathMethod.security = methodSecurity;
     }
 
     pathMethod.parameters = method.parameters

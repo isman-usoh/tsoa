@@ -19,10 +19,12 @@ export namespace Tsoa {
     parameters: Parameter[];
     path: string;
     type: Type;
-    tags: string[];
+    tags?: string[];
     responses: Response[];
-    security?: Security;
+    security: Security[];
     summary?: string;
+    isHidden: boolean;
+
   }
 
   export interface Parameter {
