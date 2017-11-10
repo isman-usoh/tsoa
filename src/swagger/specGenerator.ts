@@ -1,5 +1,6 @@
 import { Tsoa } from '../metadataGeneration/tsoa';
 import { SwaggerConfig } from './../config';
+import { normalisePath } from './../utils/pathUtils';
 import { Swagger } from './swagger';
 
 export class SpecGenerator {
@@ -7,7 +8,7 @@ export class SpecGenerator {
 
   public GetSpec() {
     let spec: Swagger.Spec = {
-      basePath: this.config.basePath,
+      basePath: normalisePath(this.config.basePath as string, '/'),
       consumes: ['application/json'],
       definitions: this.buildDefinitions(),
       info: {
@@ -79,7 +80,7 @@ export class SpecGenerator {
     this.metadata.controllers.forEach(controller => {
       // construct documentation using all methods except @Hidden
       controller.methods.filter(method => !method.isHidden).forEach(method => {
-        const path = `${controller.path ? `/${controller.path}` : ''}${method.path}`;
+        const path = `${controller.path}${method.path}`;
         paths[path] = paths[path] || {};
         this.buildMethod(controller.name, method, paths[path]);
       });
@@ -149,7 +150,7 @@ export class SpecGenerator {
       name: 'body',
       schema: {
         properties,
-        title: `${this.getOperationId(controllerName, method.name)}Body`,
+        title: `${this.getOperationId(method.name)}Body`,
         type: 'object',
       },
     } as Swagger.Parameter;
@@ -160,7 +161,7 @@ export class SpecGenerator {
   }
 
   private buildParameter(source: Tsoa.Parameter): Swagger.Parameter {
-    const parameter = {
+    let parameter = {
       default: source.default,
       description: source.description,
       in: source.in,
@@ -169,8 +170,31 @@ export class SpecGenerator {
     } as Swagger.Parameter;
 
     const parameterType = this.getSwaggerType(source.type);
+    parameter.format = parameterType.format || undefined;
+
+    if (parameter.in === 'query' && parameter.type === 'array') {
+      (parameter as Swagger.QueryParameter).collectionFormat = 'multi';
+    }
+
     if (parameterType.$ref) {
       parameter.schema = parameterType as Swagger.Schema;
+      return parameter;
+    }
+
+    const validatorObjs = {};
+    Object.keys(source.validators)
+      .filter(key => {
+        return !key.startsWith('is') && key !== 'minDate' && key !== 'maxDate';
+      })
+      .forEach((key: string) => {
+        validatorObjs[key] = source.validators[key].value;
+      });
+
+    if (source.in === 'body' && source.type.dataType === 'array') {
+      parameter.schema = {
+        items: parameterType.items,
+        type: 'array',
+      };
     } else {
       if (source.type.dataType === 'any') {
         if (source.in === 'body') {
@@ -185,21 +209,12 @@ export class SpecGenerator {
       }
     }
 
-    if (parameter.in === 'query' && parameter.type === 'array') {
-      (parameter as Swagger.QueryParameter).collectionFormat = 'multi';
+    if (parameter.schema) {
+      parameter.schema = Object.assign({}, parameter.schema, validatorObjs);
+    } else {
+      parameter = Object.assign({}, parameter, validatorObjs);
     }
 
-    if (parameterType.format) {
-      parameter.format = parameterType.format;
-    }
-
-    Object.keys(source.validators)
-      .filter(key => {
-        return !key.startsWith('is') && key !== 'minDate' && key !== 'maxDate';
-      })
-      .forEach((key: string) => {
-        parameter[key] = source.validators[key].value;
-      });
     return parameter;
   }
 
@@ -246,15 +261,14 @@ export class SpecGenerator {
     });
 
     return {
-      operationId: this.getOperationId(controllerName, method.name),
+      operationId: this.getOperationId(method.name),
       produces: ['application/json'],
       responses: swaggerResponses,
     };
   }
 
-  private getOperationId(controllerName: string, methodName: string) {
-    const controllerNameWithoutSuffix = controllerName.replace(new RegExp('Controller$'), '');
-    return `${controllerNameWithoutSuffix}${methodName.charAt(0).toUpperCase() + methodName.substr(1)}`;
+  private getOperationId(methodName: string) {
+    return methodName.charAt(0).toUpperCase() + methodName.substr(1);
   }
 
   private getSwaggerType(type: Tsoa.Type): Swagger.Schema {

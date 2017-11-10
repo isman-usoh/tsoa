@@ -40,7 +40,7 @@ export function RegisterRoutes(server: any) {
     {{#each actions}}
         server.route({
             method: '{{method}}',
-            path: '{{../../basePath}}/{{../path}}{{path}}',
+            path: '{{../../basePath}}{{../path}}{{path}}',
             config: {
                 {{#if security.length}}
                 pre: [
@@ -49,7 +49,7 @@ export function RegisterRoutes(server: any) {
                     }
                 ],
                 {{/if}}
-                handler: (request: any, reply) => {
+                handler: (request: any, reply: any) => {
                     const args = {
                         {{#each parameters}}
                             {{@key}}: {{{json this}}},
